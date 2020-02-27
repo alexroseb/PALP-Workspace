@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Descriptions - PALP Workspace</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <h1> PALP Workspace </h1>
+            <form action="/search" method="POST">
+                <label>Working on: </label>
+                <label for="region"> Region </label>
+                <input name="region" id="region" type="number" min=1 max=9 style="width:2.5em;" value= {{ region }} >
+                <label for="insula">, Insula </label>
+                <input name="insula" id="insula" style="width:2.5em;" value= {{ insula }} >
+                <label for="property">, Property</label>
+                <input name="property" id="property" style="width:2.5em;" value= {{ property }} >
+                <label for="room">, Room</label>
+                <input name="room" id="room" style="width:2.5em;" value= {{ room }} >
+                <input type="submit" class="btn btn-outline-primary btn-sm" value="Search">
+            </form>
+            <nav>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPP">PPP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPM">PPM</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PinP">Pompeii in Pictures</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Descriptions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/GIS">GIS Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Change ARC</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+<!--         <div class="row">
+            <p> Go to your workspace on Google Sheets and copy the sharable URL. Paste it here then press "Submit".</p>
+            <label for="inputDescURL" class="sr-only">Google Sheet URL</label>
+            <input type="url" name="inputDescURL" id="inputDescURL" size="50" placeholder="Google Sheet URL" />
+            <button onclick="loadIframe()" class="button">Submit </button>
+        </div> -->
+        <div class="row">
+            <div class="col-3" style="word-wrap: break-word;">
+                <p><strong>PPP </strong><br/>
+                {{ carryoverPPP }} <br/>
+                <strong> PPM </strong> <br/>
+                {{ carryoverPPM }}<br/>
+                <strong> Image(s) used: PPM </strong> <br/>
+                {{ carryoverPPMImgs }} <br/>
+                <strong> Image(s) used: PinP </strong> <br/>
+                {{ carryoverPinP }} <br/>
+                <br/>
+                <a href="/savedata" class="btn btn-outline-success">Save to Database </a> <br/><br/>
+                <a href="/cleardata" class="btn btn-outline-danger">Clear Data and Change ARC</a>
+                </p>
+            </div>
+            <div class="col">
+                <iframe id="iFrameDesc" width="100%" height="600" src={{ gdoc }}></iframe>
+            </div>
+        </div>
+    </div>
+<!--     <script type="text/javascript">
+        function loadIframe() {
+            document.getElementById("iFrameDesc").src = document.getElementById('inputDescURL').value;
+        }
+    </script> -->
+</body>
+ 
+</html>

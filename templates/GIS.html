@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>GIS Map - PALP Workspace</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <h1> PALP Workspace </h1>
+            <form action="/search" method="POST">
+                <label>Working on: </label>
+                <label for="region"> Region </label>
+                <input name="region" id="region" type="number" min=1 max=9 style="width:2.5em;" value= {{ region }} >
+                <label for="insula">, Insula </label>
+                <input name="insula" id="insula" style="width:2.5em;" value= {{ insula }} >
+                <label for="property">, Property</label>
+                <input name="property" id="property" style="width:2.5em;" value= {{ property }} >
+                <label for="room">, Room</label>
+                <input name="room" id="room" style="width:2.5em;" value= {{ room }} >
+                <input type="submit" class="btn btn-outline-primary btn-sm" value="Search">
+            </form>
+            <nav>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPP">PPP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPM">PPM</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Pompeii in Pictures</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/descriptions">Descriptions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/GIS">GIS Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Change ARC</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row">
+            <a href="https://arcg.is/ivHP0" target="_blank"> View larger map </a>
+        </div>
+        <div class="row">
+            <iframe width="940" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Pompeii: Navigation Map 2_BLD" src="//www.arcgis.com/apps/Embed/index.html?webmap=ecb39156b8824eb588787b3a8fed408e&extent=14.4779,40.7477,14.491,40.7549&zoom=true&previewImage=false&scale=true&search=true&searchextent=true&details=true&disable_scroll=true&theme=light"></iframe>
+        </div>
+    </div>
+</body>
+ 
+</html>

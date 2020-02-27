@@ -1,0 +1,34 @@
+MYSQL Commands
+
+
+CREATE TABLE IF NOT EXISTS FinalData (
+	ARC VARCHAR(30) NOT NULL PRIMARY KEY,
+	Region VARCHAR(10),
+	Insula VARCHAR(10),
+	Property VARCHAR(10),
+	Room VARCHAR(10),
+	PPM MEDIUMTEXT,
+	PPP MEDIUMTEXT,
+	PPMimgs MEDIUMTEXT,
+	PinP MEDIUMTEXT
+);
+
+^^^^^ IF do again, use TEXT not MEDIUMTEXT
+
+CREATE TABLE IF NOT EXISTS PPP (
+	id VARCHAR(30) NOT NULL PRIMARY KEY,
+	location VARCHAR(30),
+	description TEXT,
+	reviewed BOOL
+);
+
+CREATE TABLE IF NOT EXISTS PPM (
+	id VARCHAR(30) NOT NULL PRIMARY KEY,
+	location VARCHAR(30),
+	description TEXT,
+	reviewed BOOL
+);
+
+LOAD DATA LOCAL INFILE '/home/abrenon/PPP-123short.csv' INTO TABLE PPP FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+** make sure it's set to Unix line endings

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>PPP - PALP Workspace</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+ 
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <h1> PALP Workspace </h1>
+            <form action="/search" method="POST">
+                <label>Working on: </label>
+                <label for="region"> Region </label>
+                <input name="region" id="region" type="number" min=1 max=9 style="width:2.5em;" value= {{ region }} >
+                <label for="insula">, Insula </label>
+                <input name="insula" id="insula" style="width:2.5em;" value= {{ insula }}>
+                <label for="property">, Property</label>
+                <input name="property" id="property" style="width:2.5em;" value= {{ property }} >
+                <label for="room">, Room</label>
+                <input name="room" id="room" style="width:2.5em;" value= {{ room }} >
+                <input type="submit" class="btn btn-outline-primary btn-sm" value="Search">
+            </form>
+            <nav>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">PPP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPM">PPM</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PinP">Pompeii in Pictures</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/descriptions">Descriptions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/GIS">GIS Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Change ARC</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row">
+            <form action="/carryover" method="POST" >
+                <label for="catextppp"> Copy and paste the English description here. </label>
+                <textarea id="catextppp" class="form-control" name="catextppp">{{ catextppp }} </textarea>
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+        </div>
+        <div class="row">
+            <div class="col">
+                <iframe src="https://umass.app.box.com/embed/s/lfz8ncivspwxclx91ob0te5aq19jkpbj?sortColumn=date&view=list" height="500" frameborder="0" allowfullscreen webkitallowfullscreen msallowfullscreen></iframe>
+            </div>
+            <div class="col">
+                <h2> Italian </h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Checked</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in dbdata %}
+                            <tr>
+                                {% for col in row %}
+                                    <td>{{col}}</td>
+                                {% endfor %}
+                                    <td> 
+                                        <form>
+                                            <input type="checkbox" class="form-control" name="ita-{{row[0]}}" id="ita-{{row[0]}}" >
+                                        </form>
+                                    </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p> Do all of the Italian descriptions look good? <br/>
+                    <a href="/ppp-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" class="btn btn-outline-danger">No, open editing </a>
+                </p>
+            </div>
+            <div class="col">
+                <h2> English </h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Translated Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tra in transdata %}
+                            <tr>
+                                <td>{{tra}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="/carryover-button?catextppp={{transdata}}" class="btn btn-outline-primary">Copy English descriptions</a>
+            </div>
+        </div>
+    </div>
+</body>
+ 
+</html>
