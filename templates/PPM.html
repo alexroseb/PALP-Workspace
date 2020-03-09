@@ -76,7 +76,7 @@
                                     {% endfor %}
                                     <td> 
                                         <form>
-                                            <input type="checkbox" class="form-control" name="eng-{{row[0]}}" id="eng-{{row[0]}}" >
+                                            <input type="checkbox" class="form-control" name="{{row[0]}}" id="{{row[0]}}" >
                                         </form>
                                     </td>
                                 </tr>
@@ -87,7 +87,8 @@
                         <a href="/ppm-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <button class="btn btn-outline-danger" id="edit">No, open editing </button>
                         <br/><br/>
-                        <a href="/carryover-button?catextppm={{indices}}" class="btn btn-outline-primary">Copy selected English descriptions</a><br/> Note: only descriptions that have been marked as reviewed will copy over.
+                        <button class="btn btn-outline-primary" id="copy">Copy selected English descriptions </button>
+                        <br/> Note: only descriptions that have been marked as reviewed will copy over.
                     </p>
                 </div>
                 <div class="row">
@@ -102,6 +103,15 @@
             $("#data-table").replaceWith(function(){
                 return '<div class="col" id="data-edit-table"><form action="/update-ppm" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">ID</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[0]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
+        });
+        $("#copy").click(function(){
+            var i = [];
+            $('input[type=checkbox]').each(function () {
+               if (this.checked) {
+                   i.push('"' + this.id + '"');
+               }
+            });
+            window.location = "/carryover-button?catextppm=" + i;
         });
     </script>
 </body>
