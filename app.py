@@ -321,25 +321,25 @@ def showDescs():
 def carryover_text():
 	if (request.form.get('catextppp')):
 		if (session.get('carryoverPPP')):
-			session['carryoverPPP'] += "<br/>" + request.form['catextppp']
+			session['carryoverPPP'] += "; " + request.form['catextppp']
 		else:
 			session['carryoverPPP'] = request.form['catextppp']
 		
 	if (request.form.get('catextppm')):
 		if (session.get('carryoverPPM')):
-			session['carryoverPPM'] += "<br/>" + request.form['catextppm']
+			session['carryoverPPM'] += "; " + request.form['catextppm']
 		else:
 			session['carryoverPPM'] = request.form['catextppm']
 		
 	if (request.form.get('catextppmimg')):
 		if (session.get('carryoverPPMImgs')):
-			session['carryoverPPMImgs'] += "<br/>" + request.form['catextppmimg']
+			session['carryoverPPMImgs'] += "; " + request.form['catextppmimg']
 		else:
 			session['carryoverPPMImgs'] = request.form['catextppmimg']
 		
 	if (request.form.get('catextpinp')):
 		if (session.get('carryoverPinP')):
-			session['carryoverPinP'] += "<br/>" + request.form['catextpinp']
+			session['carryoverPinP'] += "; " + request.form['catextpinp']
 		else:
 			session['carryoverPinP'] = request.form['catextpinp']
 		
@@ -358,10 +358,10 @@ def carryover_button():
 		dataCopy = ""
 		for d in dataList:
 			if d[1] == 1:
-				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "<br/>"
+				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
 
 		if (session.get('carryoverPPP')):
-			session['carryoverPPP'] += "<br/>" + dataCopy
+			session['carryoverPPP'] += "; " + dataCopy
 		else:
 			session['carryoverPPP'] = dataCopy
 
@@ -376,10 +376,10 @@ def carryover_button():
 		dataCopy = ""
 		for d in dataList:
 			if d[1] == 1:
-				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "<br/>"
+				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
 
 		if (session.get('carryoverPPM')):
-			session['carryoverPPM'] += "<br/>" + dataCopy
+			session['carryoverPPM'] += "; " + dataCopy
 		else:
 			session['carryoverPPM'] = dataCopy
 
