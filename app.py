@@ -3,7 +3,6 @@ from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 import google.auth
 from google.oauth2 import service_account
-import logging
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
