@@ -1,0 +1,13 @@
+.bashrc
+.cache/
+.gitconfig
+.local/
+.my.cnf
+.mysql_history
+.profile
+.python_history
+.pythonstartup.py
+.vimrc
+.virtualenvs/
+My Project-1f2512d178cb.json
+__pycache__/
