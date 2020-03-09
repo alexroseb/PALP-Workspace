@@ -332,13 +332,41 @@ def carryover_text():
 @app.route('/carryover-button')
 def carryover_button():
 	if (request.args.get('catextppp')):
-		session['carryoverPPP'] = request.args['catextppp']
+		strargs = request.args['catextppp'].replace("[", "").replace("]", "")
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT description, reviewed FROM PPP WHERE id in (" + strargs + ") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		dataCopy = ""
+		for d in dataList:
+			if d[1] == 1:
+				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "<br/>"
+
+		if (session.get('carryoverPPP')):
+			session['carryoverPPP'] += "<br/>" + dataCopy
+		else:
+			session['carryoverPPP'] = dataCopy
+
 	if (request.args.get('catextppm')):
-		session['carryoverPPM'] = request.args['catextppm']
-	if (request.args.get('catextppmimg')):
-		session['carryoverPPMImgs'] = request.args['catextppmimg']
-	if (request.args.get('catextpinp')):
-		session['carryoverPinP'] = request.args['catextpinp']
+		strargs = request.args['catextppm'].replace("[", "").replace("]", "")
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT description, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		dataCopy = ""
+		for d in dataList:
+			if d[1] == 1:
+				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "<br/>"
+
+		if (session.get('carryoverPPM')):
+			session['carryoverPPM'] += "<br/>" + dataCopy
+		else:
+			session['carryoverPPM'] = dataCopy
+
 	return redirect(request.referrer)
 
 @app.route('/cleardata')

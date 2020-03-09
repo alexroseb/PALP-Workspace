@@ -53,49 +53,49 @@
                 </ul>
             </nav>
         </div>
-        <div class="row">
-            <form action="/carryover" method="POST" >
-                <label for="catextppp"> Copy and paste the English description here. </label>
-                <textarea id="catextppp" class="form-control" name="catextppp">{{ catextppp }} </textarea>
-                <input type="submit" class="btn btn-primary" value="Submit">
-            </form>
-        </div>
-        <div class="row">
+        <div class="row" style="margin-top: 1em;">
             <div class="col-4">
                 <iframe src="{{iframeurl}}" height="500" frameborder="0" allowfullscreen webkitallowfullscreen msallowfullscreen></iframe>
             </div>
             <div class="col" id="data-table">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Italian</th>
-                            <th scope="col">English</th>
-                            <th scope="col">Select</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in dbdata %}
+                <div class="row">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                {% for col in row %}
-                                    <td>{{col}}</td>
-                                {% endfor %}
-                                <td> 
-                                    <form>
-                                        <input type="checkbox" class="form-control" name="eng-{{row[0]}}" id="eng-{{row[0]}}" >
-                                    </form>
-                                </td>
+                                <th scope="col">ID</th>
+                                <th scope="col">Italian</th>
+                                <th scope="col">English</th>
+                                <th scope="col">Select</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <p> Do all of the Italian descriptions look good? <br/>
-                    <a href="/ppm-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button class="btn btn-outline-danger" id="edit">No, open editing </button>
-                    <br/><br/>
-                    <a href="/carryover-button?catextppm={{transdata}}" class="btn btn-outline-primary">Copy selected English descriptions</a>
-                </p>
+                        </thead>
+                        <tbody>
+                            {% for row in dbdata %}
+                                <tr>
+                                    {% for col in row %}
+                                        <td>{{col}}</td>
+                                    {% endfor %}
+                                    <td> 
+                                        <form>
+                                            <input type="checkbox" class="form-control" name="eng-{{row[0]}}" id="eng-{{row[0]}}" >
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p> Do all of the Italian descriptions look good? <br/>
+                        <a href="/ppp-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-outline-danger" id="edit">No, open editing </button>
+                        <br/><br/>
+                        <a href="/carryover-button?catextppp={{indices}}" class="btn btn-outline-primary">Copy selected English descriptions</a><br/> Note: only descriptions that have been marked as reviewed will copy over.
+                    </p>
+                </div>
+                <div class="row">
+                    <p><strong> Copied data: </strong></p><br/>
+                    <div id="catextppp" class="textarea-noedit" name="catextppp">{{ catextppp|safe }} </div>
+                </div>
             </div>
+
         </div>
     </div>
     <script type="text/javascript">
