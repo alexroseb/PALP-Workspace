@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 import google.auth
 from google.oauth2 import service_account
+import logging
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -68,14 +69,20 @@ def showPPP():
 		indices.append(d[0])
 
 	transdata = []
+	dataplustrans = []
 	for d in data:
 		translation = translate_client.translate(d[1], target_language="en", source_language="it")
 		transdata.append(translation['translatedText'])
+		dlist = list(d)
+		dlist.append(translation['translatedText'])
+		dataplustrans.append(dlist)
 
-	ppp = reg = ins = prop = room = ""
+	ppp = reg = ins = prop = room = iframeurl = ""
 
 	if (session.get('region')):
 		reg = session['region']
+		if session['region'] == "1":
+			iframeurl = "https://umass.app.box.com/embed/s/lfz8ncivspwxclx91ob0te5aq19jkpbj?sortColumn=date&view=list"
 	if (session.get('insula')):
 		ins = session['insula']
 	if (session.get('property')):
@@ -87,8 +94,8 @@ def showPPP():
 		ppp = session['carryoverPPP']
 
 	return render_template('PPP.html',
-		catextppp=ppp, dbdata = data, transdata = transdata, indices = indices,
-		region=reg, insula=ins, property=prop, room=room)
+		catextppp=ppp, dbdata = dataplustrans, transdata = transdata, indices = indices,
+		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
 
 @app.route('/PPM')
 def showPPM():
@@ -119,7 +126,7 @@ def showPPM():
 	for d in data:
 		indices.append(d[0])
 
-	transdata = [] #
+	transdata = [] 
 	dataplustrans = []
 	for d in data:
 		translation = translate_client.translate(d[1], target_language="en", source_language="it")
@@ -128,10 +135,12 @@ def showPPM():
 		dlist.append(translation['translatedText'])
 		dataplustrans.append(dlist)
 
-	ppm = ppmimg = reg = ins = prop = room = ""
+	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
 
 	if (session.get('region')):
 		reg = session['region']
+		if session['region'] == "1":
+			iframeurl = "https://umass.app.box.com/embed/s/lfz8ncivspwxclx91ob0te5aq19jkpbj?sortColumn=date&view=list"
 	if (session.get('insula')):
 		ins = session['insula']
 	if (session.get('property')):
@@ -146,7 +155,7 @@ def showPPM():
 
 	return render_template('PPM.html',
 		catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, transdata = transdata, indices = indices,
-		region=reg, insula=ins, property=prop, room=room)
+		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
 
 @app.route('/ppm-reviewed')
 def ppmReviewed():
@@ -169,6 +178,30 @@ def pppReviewed():
 	pppCur.close()
 
 	return redirect('/PPP')
+
+@app.route('/update-ppp', methods=['POST'])
+def updatePPP():
+	pppCur = mysql.connection.cursor()
+	dictargs = request.form.to_dict()
+	for k in dictargs:
+		pppQuery = "UPDATE PPP SET `description` = '" + dictargs[k] + "' WHERE id = " + k + ";"
+		pppCur.execute(pppQuery)
+	mysql.connection.commit()
+	pppCur.close()
+
+	return redirect('/PPP')
+
+@app.route('/update-ppm', methods=['POST'])
+def updatePPM():
+	ppmCur = mysql.connection.cursor()
+	dictargs = request.form.to_dict()
+	for k in dictargs:
+		ppmQuery = "UPDATE PPM SET `description` = '" + dictargs[k] + "' WHERE id = " + k + ";"
+		ppmCur.execute(ppmQuery)
+	mysql.connection.commit()
+	ppmCur.close()
+
+	return redirect('/PPM')
 
 
 @app.route('/PinP')

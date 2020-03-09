@@ -4,7 +4,9 @@
 <head>
     <title>PPP - PALP Workspace</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
- 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
  
 <body>
@@ -58,18 +60,18 @@
             </form>
         </div>
         <div class="row">
-            <div class="col">
-                <iframe src="https://umass.app.box.com/embed/s/lfz8ncivspwxclx91ob0te5aq19jkpbj?sortColumn=date&view=list" height="500" frameborder="0" allowfullscreen webkitallowfullscreen msallowfullscreen></iframe>
+            <div class="col-4">
+                <iframe src="{{iframeurl}}" height="500" frameborder="0" allowfullscreen webkitallowfullscreen msallowfullscreen></iframe>
             </div>
-            <div class="col">
-                <h2> Italian </h2>
+            <div class="col" id="data-table">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Checked</th>
-                            </tr>
+                            <th scope="col">Italian</th>
+                            <th scope="col">English</th>
+                            <th scope="col">Select</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for row in dbdata %}
@@ -77,40 +79,31 @@
                                 {% for col in row %}
                                     <td>{{col}}</td>
                                 {% endfor %}
-                                    <td> 
-                                        <form>
-                                            <input type="checkbox" class="form-control" name="ita-{{row[0]}}" id="ita-{{row[0]}}" >
-                                        </form>
-                                    </td>
+                                <td> 
+                                    <form>
+                                        <input type="checkbox" class="form-control" name="eng-{{row[0]}}" id="eng-{{row[0]}}" >
+                                    </form>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
                 <p> Do all of the Italian descriptions look good? <br/>
-                    <a href="/ppp-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="#" class="btn btn-outline-danger">No, open editing </a>
+                    <a href="/ppm-reviewed?data={{indices}}" class="btn btn-outline-success">Yes, mark as reviewed </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-outline-danger" id="edit">No, open editing </button>
+                    <br/><br/>
+                    <a href="/carryover-button?catextppm={{transdata}}" class="btn btn-outline-primary">Copy selected English descriptions</a>
                 </p>
-            </div>
-            <div class="col">
-                <h2> English </h2>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">Translated Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tra in transdata %}
-                            <tr>
-                                <td>{{tra}}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <a href="/carryover-button?catextppp={{transdata}}" class="btn btn-outline-primary">Copy English descriptions</a>
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        $("#edit").click(function(){
+            $("#data-table").replaceWith(function(){
+                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">ID</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[0]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+            });
+        });
+    </script>
 </body>
  
 </html>
