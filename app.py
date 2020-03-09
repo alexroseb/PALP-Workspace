@@ -320,13 +320,29 @@ def showDescs():
 @app.route('/carryover', methods=['POST'])
 def carryover_text():
 	if (request.form.get('catextppp')):
-		session['carryoverPPP'] = request.form['catextppp']
+		if (session.get('carryoverPPP')):
+			session['carryoverPPP'] += "<br/>" + request.form['catextppp']
+		else:
+			session['carryoverPPP'] = request.form['catextppp']
+		
 	if (request.form.get('catextppm')):
-		session['carryoverPPM'] = request.form['catextppm']
+		if (session.get('carryoverPPM')):
+			session['carryoverPPM'] += "<br/>" + request.form['catextppm']
+		else:
+			session['carryoverPPM'] = request.form['catextppm']
+		
 	if (request.form.get('catextppmimg')):
-		session['carryoverPPMImgs'] = request.form['catextppmimg']
+		if (session.get('carryoverPPMImgs')):
+			session['carryoverPPMImgs'] += "<br/>" + request.form['catextppmimg']
+		else:
+			session['carryoverPPMImgs'] = request.form['catextppmimg']
+		
 	if (request.form.get('catextpinp')):
-		session['carryoverPinP'] = request.form['catextpinp']
+		if (session.get('carryoverPinP')):
+			session['carryoverPinP'] += "<br/>" + request.form['catextpinp']
+		else:
+			session['carryoverPinP'] = request.form['catextpinp']
+		
 	return redirect(request.referrer)
 
 @app.route('/carryover-button')
