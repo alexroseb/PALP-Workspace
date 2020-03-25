@@ -11,3 +11,5 @@
 .virtualenvs/
 My Project-1f2512d178cb.json
 __pycache__/
+database_tables/
+README.txt
