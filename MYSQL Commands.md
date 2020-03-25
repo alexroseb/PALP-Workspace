@@ -1,6 +1,6 @@
-#MYSQL Commands
+# MYSQL Commands
 
-##Create tables:
+## Create tables:
 
 ```mysql
 CREATE TABLE IF NOT EXISTS FinalData (
@@ -33,14 +33,14 @@ CREATE TABLE IF NOT EXISTS PPM (
 );
 ```
 
-##Loading from csvs
+## Loading from csvs
 
 ```mysql
 LOAD DATA LOCAL INFILE '/home/abrenon/PPP-123short.csv' INTO TABLE PPP FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
 ```
 IMPORTANT: make sure it's set to Unix line endings
 
-##Importing PinP:
+## Importing PinP:
 
 ```bash
 mysql -u abrenon -h abrenon.mysql.pythonanywhere-services.com 'abrenon$workspace' < database_tables/webpage_images_tbl_webpages.sql
