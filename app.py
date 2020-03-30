@@ -273,6 +273,22 @@ def help():
 	return render_template('help.html',
 		region=reg, insula=ins, property=prop, room=room)
 
+@app.route('/images')
+def imgs():
+	reg = ins = prop = room = ""
+
+	if (session.get('region')):
+		reg = session['region']
+	if (session.get('insula')):
+		ins = session['insula']
+	if (session.get('property')):
+		prop = session['property']
+	if (session.get('room')):
+		room = session['room']
+
+	return render_template('imgs.html',
+		region=reg, insula=ins, property=prop, room=room)
+
 @app.route('/GIS')
 def GIS():
 	reg = ins = prop = room = ""
