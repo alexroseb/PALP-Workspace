@@ -55,20 +55,17 @@
             </nav>
         </div>
         <div class="row">
-            <form action="/carryover" method="POST" >
-                <label for="catextpinp"> When you find the URL(s) of the images you want, enter it here. </label>
-                <br/>
-                <textarea class="form-control" id="catextpinp" name="catextpinp">{{ catextpinp }} </textarea>
-                <input type="submit" class="btn btn-primary" value="Submit">
-            </form>
-        </div>
-        <div class="row">
-            <div class="col">
-                <iframe width="100%" height="600" src="https://pompeiiinpictures.com/pompeiiinpictures/index.htm" allowfullscreen></iframe>
-            </div>
-            <div class="col">
-                <iframe width="100%" height="600" src="https://pompeiiinpictures.com/pompeiiinpictures/index.htm" allowfullscreen></iframe>
-            </div>
+            <table class="table table-bordered">
+                <tbody>
+                    {% for row in dbdata %}
+                        <tr>
+                            {% for col in row %}
+                                <td>{{col}}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
