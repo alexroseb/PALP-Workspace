@@ -29,7 +29,13 @@ CREATE TABLE IF NOT EXISTS PPM (
 	id VARCHAR(30) NOT NULL PRIMARY KEY,
 	location VARCHAR(30),
 	description TEXT,
-	reviewed BOOL
+	reviewed BOOL,
+	image_path TEXT,
+	region VARCHAR(30),
+	insula VARCHAR(30),
+	doorway VARCHAR(30),
+	doorways VARCHAR(30),
+	room VARCHAR(30)
 );
 ```
 
@@ -38,6 +44,10 @@ CREATE TABLE IF NOT EXISTS PPM (
 ```mysql
 LOAD DATA LOCAL INFILE '/home/abrenon/PPP-123short.csv' INTO TABLE PPP FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
 ```
+```mysql
+LOAD DATA LOCAL INFILE '/home/abrenon/PPM3-aligned_Addresses.csv' INTO TABLE PPM FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+```
+
 IMPORTANT: make sure it's set to Unix line endings
 
 ## Importing PinP:
