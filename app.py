@@ -116,24 +116,30 @@ def showPPP():
 def showPPM():
 
 	ppmCur = mysql.connection.cursor()
-	ppmQuery = "SELECT id, description FROM PPM WHERE location LIKE %s;"
-	loc = ""
+	ppmQuery = "SELECT id, description FROM PPM WHERE region LIKE %s AND insula LIKE %s AND room LIKE %s;"
+	loc = []
 	if (session.get('region')):
 		romin = int(session['region']) - 1
 		if romin >= 0 and romin < len(romans):
 			romreg = romans[romin]
-			loc += romreg
+			loc.append(romreg . "%")
+	else:
+		loc.append("")
 	if (session.get('insula')):
-		loc += session['insula']
-	if (session.get('property')):
-		loc += session['property']
+		loc.append(session['insula'] + "%")
+	else:
+		loc.append("")
+	# if (session.get('property')):
+	# 	loc += session['property']
 	if (session.get('room')):
-		loc += session['room']
+		loc.append(session['room'] + "%")
+	else:
+		loc.append("")
 
 	if loc != "":
 		loc += "%"
 
-	ppmCur.execute(ppmQuery, [loc])
+	ppmCur.execute(ppmQuery, loc)
 	data = ppmCur.fetchall()
 	ppmCur.close()
 
