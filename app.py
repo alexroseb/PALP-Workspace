@@ -122,7 +122,7 @@ def showPPM():
 		romin = int(session['region']) - 1
 		if romin >= 0 and romin < len(romans):
 			romreg = romans[romin]
-			loc.append(romreg . "%")
+			loc.append(romreg + "%")
 	else:
 		loc.append("")
 	if (session.get('insula')):
@@ -135,9 +135,6 @@ def showPPM():
 		loc.append(session['room'] + "%")
 	else:
 		loc.append("")
-
-	if loc != "":
-		loc += "%"
 
 	ppmCur.execute(ppmQuery, loc)
 	data = ppmCur.fetchall()
