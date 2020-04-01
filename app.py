@@ -433,6 +433,12 @@ def carryover_button():
 		else:
 			session['carryoverPPM'] = dataCopy
 
+	if (request.args.get('catextpinp')):
+		if (session.get('carryoverPinP')):
+			session['carryoverPinP'] += "; " + request.form['catextpinp']
+		else:
+			session['carryoverPinP'] = request.form['catextpinp']
+
 	return redirect(request.referrer)
 
 @app.route('/cleardata')

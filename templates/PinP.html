@@ -56,18 +56,45 @@
         </div>
         <div class="row">
             <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Select</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {% for row in dbdata %}
                         <tr>
-                            {% for col in row %}
-                                <td>{{col}}</td>
-                            {% endfor %}
+                            <td> {{row[0]}} </td>
+                            <td> <a href={{row[1]}}><img class="img-fluid img-thumbnail" width=100 src={{row[0]}} alt=""></a> </td>
+                            <td>{{row[5]}}</td>
+                            <td> 
+                                <form>
+                                    <input type="checkbox" class="form-control" name="{{row[0]}}" id="{{row[0]}}" >
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <div class="row">
+            <button class="btn btn-outline-primary" id="copy">Copy selected images. </button>
+        </div>
     </div>
+    <script type="text/javascript">
+        $("#copy").click(function(){
+            var i = [];
+            $('input[type=checkbox]').each(function () {
+               if (this.checked) {
+                   i.push('"' + this.id + '"');
+               }
+            });
+            window.location = "/carryover-button?catextpinp=" + i;
+        });
+    </script>
 </body>
  
 </html>
