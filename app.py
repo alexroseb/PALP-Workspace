@@ -116,7 +116,7 @@ def showPPP():
 def showPPM():
 
 	ppmCur = mysql.connection.cursor()
-	ppmQuery = "SELECT id, description FROM PPM WHERE region LIKE %s AND insula LIKE %s AND room LIKE %s;"
+	ppmQuery = "SELECT id, description FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
 	loc = []
 	if (session.get('region')):
 		romin = int(session['region']) - 1
@@ -129,8 +129,10 @@ def showPPM():
 		loc.append(session['insula'] + "%")
 	else:
 		loc.append("%")
-	# if (session.get('property')):
-	# 	loc += session['property']
+	if (session.get('property')):
+		loc += (session['property'] + "%")
+	else:
+		loc.append("%")
 	if (session.get('room')):
 		loc.append(session['room'] + "%")
 	else:
@@ -243,26 +245,28 @@ def showPinP():
 	pinp = reg = ins = prop = room = ""
 
 	pinpCur = mysql.connection.cursor()
-	# pinpQuery = "SELECT id, description FROM PPP WHERE location LIKE %s;"
-	# loc = ""
-	# if (session.get('region')):
-	# 	loc += session['region']
-	# if (session.get('insula')):
-	# 	loc += session['insula']
-	# if (session.get('property')):
-	# 	loc += session['property']
-	# if (session.get('room')):
-	# 	loc += session['room']
-
-	# if loc != "":
-	# 	loc += "%"
-
-	# pinpCur.execute(pinpQuery, [loc])
-
-	# pinpQuery = "Select tbl_webpage_images.id as wi_id, tbl_webpage_images.img_url as img_url, tbl_webpage_images.azure_img_desc as azure_img_desc, tbl_webpage_images.azure_img_tags as azure_img_tags, tbl_webpage_images.image_hash as image_hash, tbl_webpage_images.img_alt as img_alt, tbl_webpages.folder as folder, tbl_webpages.file_name as file_name from webpage_images.tbl_webpage_images left join webpage_images.tbl_addresses_x on tbl_webpage_images.id = tbl_addresses_x.wi_id left join webpage_images.tbl_addresses on tbl_addresses_x.add_id = tbl_addresses.id left join webpage_images.tbl_webpages on tbl_webpages.id = tbl_webpage_images.id_webpage where tbl_addresses.pinp_regio = %s and tbl_addresses.pinp_insula = %s  and tbl_addresses.pinp_entrance = %s ORDER BY wi_id;"
 	pinpQuery = "Select tbl_webpage_images.id as wi_id, tbl_webpage_images.img_url as img_url, tbl_webpage_images.azure_img_desc as azure_img_desc, tbl_webpage_images.azure_img_tags as azure_img_tags, tbl_webpage_images.image_hash as image_hash, tbl_webpage_images.img_alt as img_alt, tbl_webpages.folder as folder, tbl_webpages.file_name as file_name from tbl_webpage_images left join tbl_addresses_x on tbl_webpage_images.id = tbl_addresses_x.wi_id left join tbl_addresses on tbl_addresses_x.add_id = tbl_addresses.id left join tbl_webpages on tbl_webpages.id = tbl_webpage_images.id_webpage where tbl_addresses.pinp_regio = %s and tbl_addresses.pinp_insula = %s  and tbl_addresses.pinp_entrance = %s ORDER BY wi_id;"
 
-	loc = ['III', '4', '2']
+	loc = []
+	if (session.get('region')):
+		romin = int(session['region']) - 1
+		if romin >= 0 and romin < len(romans):
+			romreg = romans[romin]
+			loc.append(romreg + "%")
+	else:
+		loc.append("%")
+	if (session.get('insula')):
+		loc.append(session['insula'] + "%")
+	else:
+		loc.append("%")
+	if (session.get('property')):
+		loc += (session['property'] + "%")
+	else:
+		loc.append("%")	
+	# if (session.get('room')):
+	# 	loc.append(session['room'] + "%")
+	# else:
+	# 	loc.append("%")
 
 	pinpCur.execute(pinpQuery, loc)
 

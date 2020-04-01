@@ -57,6 +57,12 @@
         <div class="row">
             <table class="table table-bordered">
                 <thead>
+                <colgroup>
+                    <col>
+                    <col width="30%">
+                    <col>
+                    <col>
+                </colgroup>
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Image</th>
@@ -68,7 +74,7 @@
                     {% for row in dbdata %}
                         <tr>
                             <td> {{row[0]}} </td>
-                            <td> <a href={{row[1]}}><img class="img-fluid img-thumbnail" width=100 src={{row[0]}} alt=""></a> </td>
+                            <td> <a href={{row[1]}}><img class="img-fluid img-thumbnail" src={{row[1]}} alt=""></a> </td>
                             <td>{{row[5]}}</td>
                             <td> 
                                 <form>
