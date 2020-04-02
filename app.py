@@ -122,19 +122,19 @@ def showPPM():
 		romin = int(session['region']) - 1
 		if romin >= 0 and romin < len(romans):
 			romreg = romans[romin]
-			loc.append(romreg + "%")
+			loc.append(romreg)
 	else:
 		loc.append("%")
 	if (session.get('insula')):
-		loc.append(session['insula'] + "%")
+		loc.append(session['insula'])
 	else:
 		loc.append("%")
 	if (session.get('property')):
-		loc.append(session['property'] + "%")
+		loc.append(session['property'])
 	else:
 		loc.append("%")
 	if (session.get('room')):
-		loc.append(session['room'] + "%")
+		loc.append(session['room'])
 	else:
 		loc.append("%")
 
@@ -146,7 +146,7 @@ def showPPM():
 	for d in data:
 		indices.append(d[0])
 
-	transdata = [] 
+	transdata = []
 	dataplustrans = []
 	for d in data:
 		translation = translate_client.translate(d[1], target_language="en", source_language="it")
@@ -245,28 +245,24 @@ def showPinP():
 	pinp = reg = ins = prop = room = ""
 
 	pinpCur = mysql.connection.cursor()
-	pinpQuery = "Select tbl_webpage_images.id as wi_id, tbl_webpage_images.img_url as img_url, tbl_webpage_images.azure_img_desc as azure_img_desc, tbl_webpage_images.azure_img_tags as azure_img_tags, tbl_webpage_images.image_hash as image_hash, tbl_webpage_images.img_alt as img_alt, tbl_webpages.folder as folder, tbl_webpages.file_name as file_name from tbl_webpage_images left join tbl_addresses_x on tbl_webpage_images.id = tbl_addresses_x.wi_id left join tbl_addresses on tbl_addresses_x.add_id = tbl_addresses.id left join tbl_webpages on tbl_webpages.id = tbl_webpage_images.id_webpage where tbl_addresses.pinp_regio = %s and tbl_addresses.pinp_insula = %s  and tbl_addresses.pinp_entrance = %s ORDER BY wi_id;"
+	pinpQuery = "Select tbl_webpage_images.id as wi_id, tbl_webpage_images.img_url as img_url, tbl_webpage_images.azure_img_desc as azure_img_desc, tbl_webpage_images.azure_img_tags as azure_img_tags, tbl_webpage_images.image_hash as image_hash, tbl_webpage_images.img_alt as img_alt, tbl_webpages.folder as folder, tbl_webpages.file_name as file_name from tbl_webpage_images left join tbl_addresses_x on tbl_webpage_images.id = tbl_addresses_x.wi_id left join tbl_addresses on tbl_addresses_x.add_id = tbl_addresses.id left join tbl_webpages on tbl_webpages.id = tbl_webpage_images.id_webpage where tbl_addresses.pinp_regio LIKE %s and tbl_addresses.pinp_insula LIKE %s  and tbl_addresses.pinp_entrance LIKE %s ORDER BY wi_id;"
 
 	loc = []
 	if (session.get('region')):
 		romin = int(session['region']) - 1
 		if romin >= 0 and romin < len(romans):
 			romreg = romans[romin]
-			loc.append(romreg + "%")
+			loc.append(romreg)
 	else:
 		loc.append("%")
 	if (session.get('insula')):
-		loc.append(session['insula'] + "%")
+		loc.append(session['insula'])
 	else:
 		loc.append("%")
 	if (session.get('property')):
-		loc += (session['property'] + "%")
+		loc.append(session['property'])
 	else:
-		loc.append("%")	
-	# if (session.get('room')):
-	# 	loc.append(session['room'] + "%")
-	# else:
-	# 	loc.append("%")
+		loc.append("%")
 
 	pinpCur.execute(pinpQuery, loc)
 
@@ -378,25 +374,25 @@ def carryover_text():
 			session['carryoverPPP'] += "; " + request.form['catextppp']
 		else:
 			session['carryoverPPP'] = request.form['catextppp']
-		
+
 	if (request.form.get('catextppm')):
 		if (session.get('carryoverPPM')):
 			session['carryoverPPM'] += "; " + request.form['catextppm']
 		else:
 			session['carryoverPPM'] = request.form['catextppm']
-		
+
 	if (request.form.get('catextppmimg')):
 		if (session.get('carryoverPPMImgs')):
 			session['carryoverPPMImgs'] += "; " + request.form['catextppmimg']
 		else:
 			session['carryoverPPMImgs'] = request.form['catextppmimg']
-		
+
 	if (request.form.get('catextpinp')):
 		if (session.get('carryoverPinP')):
 			session['carryoverPinP'] += "; " + request.form['catextpinp']
 		else:
 			session['carryoverPinP'] = request.form['catextpinp']
-		
+
 	return redirect(request.referrer)
 
 @app.route('/carryover-button')
