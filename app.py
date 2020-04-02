@@ -130,7 +130,7 @@ def showPPM():
 	else:
 		loc.append("%")
 	if (session.get('property')):
-		loc += (session['property'] + "%")
+		loc.append(session['property'] + "%")
 	else:
 		loc.append("%")
 	if (session.get('room')):
@@ -439,9 +439,9 @@ def carryover_button():
 
 	if (request.args.get('catextpinp')):
 		if (session.get('carryoverPinP')):
-			session['carryoverPinP'] += "; " + request.form['catextpinp']
+			session['carryoverPinP'] += "; " + request.args['catextpinp']
 		else:
-			session['carryoverPinP'] = request.form['catextpinp']
+			session['carryoverPinP'] = request.args['catextpinp']
 
 	return redirect(request.referrer)
 
