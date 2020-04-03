@@ -3,6 +3,9 @@ from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 import google.auth
 from google.oauth2 import service_account
+# from boxsdk import Client, OAuth2
+from boxsdk import JWTAuth, Client
+import json
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -14,6 +17,34 @@ app.config['MYSQL_DB'] = 'abrenon$workspace'
 app.config['MYSQL_HOST'] = 'abrenon.mysql.pythonanywhere-services.com'
 mysql = MySQL(app)
 
+#Box API configurations
+# CLIENT_ID = None
+# CLIENT_SECRET = None
+# ACCESS_TOKEN = None
+
+# with open('app.cfg', 'r') as app_cfg:
+# 	CLIENT_ID = app_cfg.readline()
+# 	CLIENT_SECRET = app_cfg.readline()
+# 	ACCESS_TOKEN = app_cfg.readline()
+
+# oauth2 = OAuth2(CLIENT_ID, CLIENT_SECRET, access_token=ACCESS_TOKEN)
+# client = Client(oauth2)
+with open('462314_ydhxrql7_config.json', 'r') as f:
+	boxapi = json.load(f)
+box_auth = JWTAuth(
+	client_id=boxapi["boxAppSettings"]["clientID"],
+    client_secret=boxapi["boxAppSettings"]["clientSecret"],
+    enterprise_id=boxapi["enterpriseID"],
+    jwt_key_id=boxapi["boxAppSettings"]["appAuth"]["publicKeyID"],
+    rsa_private_key_data=boxapi["boxAppSettings"]["appAuth"]["privateKey"],
+    rsa_private_key_passphrase=boxapi["boxAppSettings"]["appAuth"]["passphrase"],
+)
+
+box_access_token = box_auth.authenticate_instance()
+
+box_client = Client(box_auth)
+
+#Google API configuration
 credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
 translate_client = translate.Client(credentials=credentials)
 
@@ -318,8 +349,12 @@ def imgs():
 	if (session.get('room')):
 		room = session['room']
 
+	file_id = '525898106477'
+
+	thumbnail = client.file(file_id).get_thumbnail(extension='jpg')
+
 	return render_template('imgs.html',
-		region=reg, insula=ins, property=prop, room=room)
+		region=reg, insula=ins, property=prop, room=room, thumbnail = thumbnail)
 
 @app.route('/GIS')
 def GIS():
