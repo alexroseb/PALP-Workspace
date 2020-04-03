@@ -9,7 +9,9 @@
 .pythonstartup.py
 .vimrc
 .virtualenvs/
-My Project-1f2512d178cb.json
 __pycache__/
 database_tables/
 README.txt
+*.csv
+*.cfg
+*.json
