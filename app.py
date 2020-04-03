@@ -1,8 +1,16 @@
+from __future__ import print_function
 from flask import Flask, render_template, session, json, request, redirect
 from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 import google.auth
 from google.oauth2 import service_account
+from googleapiclient import discovery
+import httplib2
+import pickle
+import os.path
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -14,13 +22,73 @@ app.config['MYSQL_DB'] = 'abrenon$workspace'
 app.config['MYSQL_HOST'] = 'abrenon.mysql.pythonanywhere-services.com'
 mysql = MySQL(app)
 
-credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
-translate_client = translate.Client(credentials=credentials)
+#Google Translate credentials
+tr_credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
+translate_client = translate.Client(credentials=tr_credentials)
+
+#Google Sheets credentials
+scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+gs_credentials = service_account.Credentials.from_service_account_file("/home/abrenon/my-project-1537454316408-a43a538835d8.json", scopes = scopes)
+sheets_client = discovery.build('sheets', 'v4', credentials=gs_credentials)
+
+# THIS BLOCK MAKES IT TIME OUT
+# creds = None
+# # The file token.pickle stores the user's access and refresh tokens, and is
+# # created automatically when the authorization flow completes for the first
+# # time.
+# if os.path.exists('token.pickle'):
+#     with open('token.pickle', 'rb') as token:
+#         creds = pickle.load(token)
+# # If there are no (valid) credentials available, let the user log in.
+# if not creds or not creds.valid:
+#     if creds and creds.expired and creds.refresh_token:
+#         creds.refresh(Request())
+#     else:
+#         flow = InstalledAppFlow.from_client_secrets_file(
+#             "/home/abrenon/credentials.json", scopes)
+#         creds = flow.run_local_server(port=0)
+#     # Save the credentials for the next run
+#     with open('token.pickle', 'wb') as token:
+#         pickle.dump(creds, token)
+# sheets_service = build('sheets', 'v4', credentials=creds)
 
 romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 
+def getWorksheet():
+	tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
+	request = sheets_client.spreadsheets().get(spreadsheetId=tracking_ws)
+	response = request.execute()
+
+	# ppp_ids_4df = tracking_tab.col_values(1)[2:]
+
+	# ppp_spaces = list(set(ppp_ids_4df ))
+
+	# plod_properties_4df = []
+	# plod_spaces_4df = []
+
+
+	# for s in ppp_ids_4df:
+	# 	s = re.sub("IX","9",s)
+	# 	s = re.sub("IV","4",s)
+	# 	s = re.sub("VIII","8",s)
+	# 	s = re.sub("VII","7",s)
+	# 	s = re.sub("VI","6",s)
+	# 	s = re.sub("V","5",s)
+	# 	s = re.sub("III","3",s)
+	# 	s = re.sub("II","2",s)
+	# 	s = re.sub("I","1",s)
+
+	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
+	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
+
+	# arc_features_4df = tracking_tab.col_values(7)[2:]
+
+	# arc_peer_4df = tracking_tab.col_values(9)[2:]
+	# arc_final_4df = tracking_tab.col_values(10)[2:]
+
 @app.route("/")
 def index():
+	getWorksheet()
 	reg = ins = prop = room = arc = gdoc = ""
 
 	if (session.get('region')):
