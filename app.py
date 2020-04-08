@@ -1,8 +1,9 @@
+from __future__ import print_function
 from flask import Flask, render_template, session, json, request, redirect
 from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
-import google.auth
 from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -14,13 +15,53 @@ app.config['MYSQL_DB'] = 'abrenon$workspace'
 app.config['MYSQL_HOST'] = 'abrenon.mysql.pythonanywhere-services.com'
 mysql = MySQL(app)
 
-credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
-translate_client = translate.Client(credentials=credentials)
+#Google Translate credentials
+tr_credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
+translate_client = translate.Client(credentials=tr_credentials)
+
+#Google Sheets credentials
+scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+scoped_gs = tr_credentials.with_scopes(scopes)
+sheets_client = build('sheets', 'v4', credentials=scoped_gs)
+
 
 romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 
+def getWorksheet():
+	tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
+	request = sheets_client.spreadsheets().get(spreadsheetId=tracking_ws)
+	response = request.execute()
+
+	# ppp_ids_4df = tracking_tab.col_values(1)[2:]
+
+	# ppp_spaces = list(set(ppp_ids_4df ))
+
+	# plod_properties_4df = []
+	# plod_spaces_4df = []
+
+
+	# for s in ppp_ids_4df:
+	# 	s = re.sub("IX","9",s)
+	# 	s = re.sub("IV","4",s)
+	# 	s = re.sub("VIII","8",s)
+	# 	s = re.sub("VII","7",s)
+	# 	s = re.sub("VI","6",s)
+	# 	s = re.sub("V","5",s)
+	# 	s = re.sub("III","3",s)
+	# 	s = re.sub("II","2",s)
+	# 	s = re.sub("I","1",s)
+
+	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
+	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
+
+	# arc_features_4df = tracking_tab.col_values(7)[2:]
+
+	# arc_peer_4df = tracking_tab.col_values(9)[2:]
+	# arc_final_4df = tracking_tab.col_values(10)[2:]
+
 @app.route("/")
 def index():
+	getWorksheet()
 	reg = ins = prop = room = arc = gdoc = ""
 
 	if (session.get('region')):
