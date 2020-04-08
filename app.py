@@ -2,15 +2,8 @@ from __future__ import print_function
 from flask import Flask, render_template, session, json, request, redirect
 from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
-import google.auth
 from google.oauth2 import service_account
-from googleapiclient import discovery
-import httplib2
-import pickle
-import os.path
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -28,29 +21,9 @@ translate_client = translate.Client(credentials=tr_credentials)
 
 #Google Sheets credentials
 scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-gs_credentials = service_account.Credentials.from_service_account_file("/home/abrenon/my-project-1537454316408-a43a538835d8.json", scopes = scopes)
-sheets_client = discovery.build('sheets', 'v4', credentials=gs_credentials)
+scoped_gs = tr_credentials.with_scopes(scopes)
+sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 
-# THIS BLOCK MAKES IT TIME OUT
-# creds = None
-# # The file token.pickle stores the user's access and refresh tokens, and is
-# # created automatically when the authorization flow completes for the first
-# # time.
-# if os.path.exists('token.pickle'):
-#     with open('token.pickle', 'rb') as token:
-#         creds = pickle.load(token)
-# # If there are no (valid) credentials available, let the user log in.
-# if not creds or not creds.valid:
-#     if creds and creds.expired and creds.refresh_token:
-#         creds.refresh(Request())
-#     else:
-#         flow = InstalledAppFlow.from_client_secrets_file(
-#             "/home/abrenon/credentials.json", scopes)
-#         creds = flow.run_local_server(port=0)
-#     # Save the credentials for the next run
-#     with open('token.pickle', 'wb') as token:
-#         pickle.dump(creds, token)
-# sheets_service = build('sheets', 'v4', credentials=creds)
 
 romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 
