@@ -10,10 +10,11 @@ app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
 
 # MySQL configurations
 with open('mysql.cfg', 'r') as mysql_cfg:
-	app.config['MYSQL_USER'] = mysql_cfg.readline()
-	app.config['MYSQL_PASSWORD'] = mysql_cfg.readline()
-	app.config['MYSQL_DB'] = mysql_cfg.readline()
-	app.config['MYSQL_HOST'] = mysql_cfg.readline()
+	mysql_cfg_lines = mysql_cfg.read().splitlines()
+	app.config['MYSQL_USER'] = mysql_cfg_lines[0]
+	app.config['MYSQL_PASSWORD'] = mysql_cfg_lines[1]
+	app.config['MYSQL_DB'] = mysql_cfg_lines[2]
+	app.config['MYSQL_HOST'] = mysql_cfg_lines[3]
 mysql = MySQL(app)
 
 #Google Translate credentials
