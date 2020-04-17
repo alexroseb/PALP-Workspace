@@ -9,10 +9,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
 
 # MySQL configurations
-app.config['MYSQL_USER'] = 'abrenon'
-app.config['MYSQL_PASSWORD'] = 'anywheremysql'
-app.config['MYSQL_DB'] = 'abrenon$workspace'
-app.config['MYSQL_HOST'] = 'abrenon.mysql.pythonanywhere-services.com'
+with open('mysql.cfg', 'r') as mysql_cfg:
+	app.config['MYSQL_USER'] = mysql_cfg.readline()
+	app.config['MYSQL_PASSWORD'] = mysql_cfg.readline()
+	app.config['MYSQL_DB'] = mysql_cfg.readline()
+	app.config['MYSQL_HOST'] = mysql_cfg.readline()
 mysql = MySQL(app)
 
 #Google Translate credentials
