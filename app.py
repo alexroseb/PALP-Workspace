@@ -16,7 +16,7 @@ app.config['MYSQL_HOST'] = 'abrenon.mysql.pythonanywhere-services.com'
 mysql = MySQL(app)
 
 #Google Translate credentials
-tr_credentials = service_account.Credentials.from_service_account_file("/home/abrenon/My Project-1f2512d178cb.json")
+tr_credentials = service_account.Credentials.from_service_account_file("My Project-1f2512d178cb.json")
 translate_client = translate.Client(credentials=tr_credentials)
 
 #Google Sheets credentials
