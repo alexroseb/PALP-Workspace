@@ -4,6 +4,8 @@ from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+import boxsdk
+import json
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -26,6 +28,21 @@ scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 
+#Box API configurations
+with open('box_config.json', 'r') as f:
+	boxapi = json.load(f)
+box_auth = boxsdk.JWTAuth(
+	client_id=boxapi["boxAppSettings"]["clientID"],
+    client_secret=boxapi["boxAppSettings"]["clientSecret"],
+    enterprise_id=boxapi["enterpriseID"],
+    jwt_key_id=boxapi["boxAppSettings"]["appAuth"]["publicKeyID"],
+    rsa_private_key_data=boxapi["boxAppSettings"]["appAuth"]["privateKey"],
+    rsa_private_key_passphrase=boxapi["boxAppSettings"]["appAuth"]["passphrase"],
+)
+
+box_access_token = box_auth.authenticate_instance()
+
+box_client = boxsdk.Client(box_auth)
 
 romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 

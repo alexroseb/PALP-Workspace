@@ -1,4 +1,5 @@
--f /usr/share/pip-wheels
+attrs==19.3.0
+boxsdk==2.7.1
 cachetools==4.1.0
 certifi==2020.4.5.1
 chardet==3.0.4
@@ -24,8 +25,10 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pytz==2019.3
 requests==2.23.0
+requests-toolbelt==0.9.1
 rsa==4.0
 six==1.14.0
 uritemplate==3.0.1
 urllib3==1.25.8
 Werkzeug==1.0.1
+wrapt==1.12.1
