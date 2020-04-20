@@ -378,8 +378,13 @@ def imgs():
 	if (session.get('room')):
 		room = session['room']
 
+	file_id = '525898106477'
+
+	thumbnail = box_client.file(file_id).get_thumbnail(extension='jpg')
+
 	return render_template('imgs.html',
-		region=reg, insula=ins, property=prop, room=room)
+		region=reg, insula=ins, property=prop, room=room,
+		thumbnail=thumbnail)
 
 @app.route('/GIS')
 def GIS():
