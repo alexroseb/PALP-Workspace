@@ -380,7 +380,10 @@ def imgs():
 
 	file_id = '525898106477'
 
-	thumbnail = box_client.file(file_id).get_thumbnail(extension='jpg')
+	try:
+		thumbnail = box_client.file(file_id).get_thumbnail(extension='jpg')
+	except boxsdk.BoxAPIException as exception:
+		thumbnail = exception.code
 
 	return render_template('imgs.html',
 		region=reg, insula=ins, property=prop, room=room,
