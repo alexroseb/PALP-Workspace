@@ -105,7 +105,7 @@ def index():
 def showPPP():
 
 	pppCur = mysql.connection.cursor()
-	pppQuery = "SELECT id, description FROM PPP WHERE location LIKE %s;"
+	pppQuery = "SELECT id, description FROM PPP WHERE id LIKE %s;"
 	loc = ""
 	if (session.get('region')):
 		loc += session['region']
@@ -432,6 +432,32 @@ def showDescs():
 		gdoc = session['gdoc']
 
 	return render_template('descs.html',
+		carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
+		region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
+
+@app.route('/data')
+def showCarryover():
+	ppp = ppm = ppmimg = pinp = reg = ins = prop = room = ""
+
+	if (session.get('region')):
+		reg = session['region']
+	if (session.get('insula')):
+		ins = session['insula']
+	if (session.get('property')):
+		prop = session['property']
+	if (session.get('room')):
+		room = session['room']
+
+	if (session.get('carryoverPPPids')):
+		ppp = session['carryoverPPPids']
+	if (session.get('carryoverPPMids')):
+		ppm = session['carryoverPPMids']
+	if (session.get('carryoverPPMImgsids')):
+		ppmimg = session['carryoverPPMImgsids']
+	if (session.get('carryoverPinPids')):
+		pinp = session['carryoverPinPids']
+
+	return render_template('imgs.html',
 		carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
 		region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
 
