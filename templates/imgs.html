@@ -58,6 +58,7 @@
             </nav>
         </div>
         <div class="row">
+          <h2> PPP Data </h2>
           <table class="table table-bordered">
               <thead>
                   <tr>
@@ -78,6 +79,7 @@
           </table>
         </div>
         <div class="row">
+          <h2> PPM Data </h2>
           <table class="table table-bordered">
               <thead>
                   <tr>
@@ -98,10 +100,18 @@
           </table>
         </div>
         <div class="row">
-          {% for row in pinpdata %}
+          <h2> PinP Data </h2>
+<!--           {% for row in pinpdata %}
             <div class="col-lg-3 col-md-4 col-6">
               <a href="{{row}}" class="d-block mb-4 h-100">
                     <img class="img-fluid img-thumbnail" src="{{row}}" alt="">
+              </a>
+            </div>
+          {% endfor %} -->
+          {% for i in range(10) %}
+            <div class="col-lg-3 col-md-4 col-6">
+              <a href="https://via.placeholder.com/150x150" class="d-block mb-4 h-100">
+                    <img class="img-fluid img-thumbnail" src="https://via.placeholder.com/150x150" alt="">
               </a>
             </div>
           {% endfor %}

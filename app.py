@@ -78,6 +78,21 @@ def getWorksheet():
 	# arc_peer_4df = tracking_tab.col_values(9)[2:]
 	# arc_final_4df = tracking_tab.col_values(10)[2:]
 
+def dataTranslate(data):
+	indices = []
+	for d in data:
+		indices.append(d[0])
+
+	transdata = []
+	dataplustrans = []
+	for d in data:
+		translation = translate_client.translate(d[1], target_language="en", source_language="it")
+		transdata.append(translation['translatedText'])
+		dlist = list(d)
+		dlist.append(translation['translatedText'])
+		dataplustrans.append(dlist)
+	return dataplustrans
+
 @app.route("/")
 def index():
 	getWorksheet()
@@ -437,7 +452,8 @@ def showDescs():
 
 @app.route('/data')
 def showCarryover():
-	ppp = ppm = ppmimg = pinp = reg = ins = prop = room = ""
+	ppp = ppm = ppmimg = pinp = []
+	reg = ins = prop = room = ""
 
 	if (session.get('region')):
 		reg = session['region']
@@ -449,17 +465,29 @@ def showCarryover():
 		room = session['room']
 
 	if (session.get('carryoverPPPids')):
-		ppp = session['carryoverPPPids']
+		carryCur = mysql.connection.cursor()
+		inn = ', '.join(session['carryoverPPPids'])
+		carryQuery = "SELECT id, description FROM PPP WHERE id in (" + inn +") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+		ppp = dataTranslate(dataList)
 	if (session.get('carryoverPPMids')):
-		ppm = session['carryoverPPMids']
+		inn = ', '.join(session['carryoverPPMids'])
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT id, description FROM PPM WHERE id in (" + inn +") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+		ppm = dataTranslate(dataList)
 	if (session.get('carryoverPPMImgsids')):
 		ppmimg = session['carryoverPPMImgsids']
 	if (session.get('carryoverPinPids')):
 		pinp = session['carryoverPinPids']
 
 	return render_template('imgs.html',
-		carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
-		region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
+		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata=pinp,
+		region=reg, insula=ins, property=prop, room=room)
 
 @app.route('/carryover', methods=['POST'])
 def carryover_text():
@@ -493,6 +521,10 @@ def carryover_text():
 def carryover_button():
 	if (request.args.get('catextppp')):
 		strargs = request.args['catextppp'].replace("[", "").replace("]", "")
+		if (session.get('carryoverPPPids')):
+			session['carryoverPPPids'] += strargs.split(",")
+		else:
+			session['carryoverPPPids'] = strargs.split(",")
 		carryCur = mysql.connection.cursor()
 		carryQuery = "SELECT description, reviewed FROM PPP WHERE id in (" + strargs + ") ;"
 		carryCur.execute(carryQuery)
@@ -511,6 +543,10 @@ def carryover_button():
 
 	if (request.args.get('catextppm')):
 		strargs = request.args['catextppm'].replace("[", "").replace("]", "")
+		if (session.get('carryoverPPMids')):
+			session['carryoverPPMids'] += strargs.split(",")
+		else:
+			session['carryoverPPMids'] = strargs.split(",")
 		carryCur = mysql.connection.cursor()
 		carryQuery = "SELECT description, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
 		carryCur.execute(carryQuery)
@@ -541,6 +577,10 @@ def clearData():
 	session['carryoverPPM'] = ""
 	session['carryoverPPMImgs'] = ""
 	session['carryoverPinP'] = ""
+	session['carryoverPPPids'] = []
+	session['carryoverPPMids'] = []
+	session['carryoverPPMImgsids'] = []
+	session['carryoverPinPids'] = []
 
 	session['arc'] = ""
 	session['region'] = ""
