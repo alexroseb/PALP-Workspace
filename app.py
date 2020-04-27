@@ -6,6 +6,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import boxsdk
 import json
+import re
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -103,7 +104,7 @@ def init():
 		s = re.sub("II","2",s)
 		s = re.sub("I","1",s)
 
-		session['region'] = int(s[0])
+		session['region'] = s[0]
 		session['insula'] = s[1:3]
 		session['property'] = s[3:5]
 		session['room'] = s[5:]
@@ -301,10 +302,7 @@ def showPinP():
 
 	loc = []
 	if (session.get('region')):
-		romin = int(session['region']) - 1
-		if romin >= 0 and romin < len(romans):
-			romreg = romans[romin]
-			loc.append(romreg)
+		loc.append(toRoman(session['region']))
 	else:
 		loc.append("%")
 	if (session.get('insula')):
