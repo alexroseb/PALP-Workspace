@@ -93,6 +93,7 @@ def init():
 		arcind = arclist.index(arc)
 		session['gdoc'] = values[10][arcind] #Column K
 		room = values[0][arcind]
+		session['insula'] = room
 
 	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
 	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
