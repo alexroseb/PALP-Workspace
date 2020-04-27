@@ -306,11 +306,17 @@ def showPinP():
 	else:
 		loc.append("%")
 	if (session.get('insula')):
-		loc.append(session['insula'])
+		ins = session['insula']
+		if session['insula'][0] == "0":
+			ins = session['insula'].replace("0","")
+		loc.append(ins)
 	else:
 		loc.append("%")
 	if (session.get('property')):
-		loc.append(session['property'])
+		prop = session['property'] 
+		if session['property'][0] == "0":
+			prop = session['property'].replace("0","")
+		loc.append(prop)
 	else:
 		loc.append("%")
 

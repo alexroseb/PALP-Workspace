@@ -108,8 +108,8 @@
           <table class="table table-bordered">
               <thead>
                   <tr>
-                      <th scope="col">ID</th>
                       <th scope="col">Image</th>
+                      <th scope="col">ID</th>
                       <th scope="col">Italian</th>
                       <th scope="col">English</th>
                   </tr>
@@ -117,11 +117,11 @@
               <tbody>
                   {% for row in ppmdata %}
                       <tr>
-                        <a href="https://via.placeholder.com/150x150" class="d-block mb-4 h-100">
-                    <img class="img-fluid img-thumbnail" src="https://via.placeholder.com/150x150" alt="">
+                        <td>
+                          <a href="https://via.placeholder.com/150x150" class="d-block mb-4 h-100">
+                              <img class="img-fluid img-thumbnail" src="https://via.placeholder.com/150x150" alt="">
                         </a>
-                      </tr>
-                      <tr>
+                      </td>
                           {% for col in row %}
                               <td>{{col}}</td>
                           {% endfor %}
