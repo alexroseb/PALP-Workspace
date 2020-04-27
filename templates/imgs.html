@@ -57,7 +57,31 @@
                 </ul>
             </nav>
         </div>
+        <div class='row'>
+        <a href="/savedata" class="btn btn-outline-success">Save to Database </a> <br/><br/>
         <div class="row">
+        <h2> PinP Data </h2>
+        </div>
+        <div class="row">
+          <a href={{thumbnail}} class="d-block mb-4 h-100">
+                    <img class="img-fluid img-thumbnail" src={{thumbnail}} alt="">
+              </a>
+<!--           {% for row in pinpdata %}
+            <div class="col-lg-3 col-md-4 col-6">
+              <a href="{{row}}" class="d-block mb-4 h-100">
+                    <img class="img-fluid img-thumbnail" src="{{row}}" alt="">
+              </a>
+            </div>
+          {% endfor %} -->
+          {% for i in range(10) %}
+            <div class="col-lg-3 col-md-4 col-6">
+              <a href="https://via.placeholder.com/150x150" class="d-block mb-4 h-100">
+                    <img class="img-fluid img-thumbnail" src="https://via.placeholder.com/150x150" alt="">
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+                <div class="row">
           <h2> PPP Data </h2>
           <table class="table table-bordered">
               <thead>
@@ -104,28 +128,6 @@
                   {% endfor %}
               </tbody>
           </table>
-        </div>
-        <div class="row">
-        <h2> PinP Data </h2>
-        </div>
-        <div class="row">
-          <a href={{thumbnail}} class="d-block mb-4 h-100">
-                    <img class="img-fluid img-thumbnail" src={{thumbnail}} alt="">
-              </a>
-<!--           {% for row in pinpdata %}
-            <div class="col-lg-3 col-md-4 col-6">
-              <a href="{{row}}" class="d-block mb-4 h-100">
-                    <img class="img-fluid img-thumbnail" src="{{row}}" alt="">
-              </a>
-            </div>
-          {% endfor %} -->
-          {% for i in range(10) %}
-            <div class="col-lg-3 col-md-4 col-6">
-              <a href="https://via.placeholder.com/150x150" class="d-block mb-4 h-100">
-                    <img class="img-fluid img-thumbnail" src="https://via.placeholder.com/150x150" alt="">
-              </a>
-            </div>
-          {% endfor %}
         </div>
 
 </div>

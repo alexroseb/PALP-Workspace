@@ -92,16 +92,22 @@ def init():
 	if arc in arclist:
 		arcind = arclist.index(arc)
 		session['gdoc'] = values[10][arcind] #Column K
-		room = values[0][arcind]
-		session['insula'] = room
+		s = values[0][arcind]
+		s = re.sub("IX","9",s)
+		s = re.sub("IV","4",s)
+		s = re.sub("VIII","8",s)
+		s = re.sub("VII","7",s)
+		s = re.sub("VI","6",s)
+		s = re.sub("V","5",s)
+		s = re.sub("III","3",s)
+		s = re.sub("II","2",s)
+		s = re.sub("I","1",s)
 
-	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
-	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
+		session['region'] = int(s[0])
+		session['insula'] = s[1:3]
+		session['property'] = s[3:5]
+		session['room'] = s[5:]
 
-	# arc_features_4df = tracking_tab.col_values(7)[2:]
-
-	# arc_peer_4df = tracking_tab.col_values(9)[2:]
-	# arc_final_4df = tracking_tab.col_values(10)[2:]
 	else:
 		return render_template('index.html', arc=arc, error="I'm sorry, that's an invalid ARC. Please try again.")
 
