@@ -5,5 +5,5 @@
 - pip install -r requirements.txt
 - Config files:
     - mysql.cfg
-    - app.cfg
     - My Project-1f2512d178cb.json
+    - box_config.json
