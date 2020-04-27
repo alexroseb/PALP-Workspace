@@ -92,7 +92,7 @@ def dataTranslate(data):
 		dlist = list(d)
 		dlist.append(translation['translatedText'])
 		dataplustrans.append(dlist)
-	return dataplustrans
+	return dataplustrans, indices
 
 @app.route("/") # Home page
 def index():
@@ -154,7 +154,7 @@ def showPPP():
 	data = pppCur.fetchall()
 	pppCur.close()
 
-	dataplustrans = dataTranslate(data)
+	dataplustrans, indices = dataTranslate(data)
 
 	ppp = reg = ins = prop = room = iframeurl = ""
 
@@ -224,7 +224,7 @@ def showPPM():
 	data = ppmCur.fetchall()
 	ppmCur.close()
 
-	dataplustrans = dataTranslate(data)
+	dataplustrans, indices = dataTranslate(data)
 
 	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
 
@@ -445,7 +445,7 @@ def showCarryover():
 		carryCur.execute(carryQuery)
 		dataList = carryCur.fetchall()
 		carryCur.close()
-		ppp = dataTranslate(dataList)
+		ppp, pppinds = dataTranslate(dataList)
 	if (session.get('carryoverPPMids')):
 		inn = ', '.join(session['carryoverPPMids'])
 		carryCur = mysql.connection.cursor()
@@ -453,7 +453,7 @@ def showCarryover():
 		carryCur.execute(carryQuery)
 		dataList = carryCur.fetchall()
 		carryCur.close()
-		ppm = dataTranslate(dataList)
+		ppm, ppminds = dataTranslate(dataList)
 	if (session.get('carryoverPPMImgsids')):
 		ppmimg = session['carryoverPPMImgsids']
 	if (session.get('carryoverPinPids')):
