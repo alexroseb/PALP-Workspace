@@ -190,7 +190,7 @@ def showPPP():
 		ppp = session['carryoverPPP']
 
 	return render_template('PPP.html',
-		catextppp=ppp, dbdata = dataplustrans, transdata = transdata, indices = indices,
+		catextppp=ppp, dbdata = dataplustrans, indices = indices,
 		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
 
 @app.route('/PPM') #PPM page
@@ -262,7 +262,7 @@ def showPPM():
 		ppmimg = session['carryoverPPMImgs']
 
 	return render_template('PPM.html',
-		catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, transdata = transdata, indices = indices,
+		catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, indices = indices,
 		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
 
 # When items are marked as reviewed, update database
