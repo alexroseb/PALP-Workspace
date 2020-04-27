@@ -51,21 +51,12 @@
             <p><strong>Please enter what you're working on:</strong></p>
         </div>
         <div class="row">
+            {{error}}
+        </div>
+        <div class="row">
             <form action="/init" method="POST">
                 <label for="arc"> ARC Number </label>
                 <input class="form-control" name="arc" id="arc" required value= {{ arc }}>
-                <br/>
-                <label for="gdoc"> Google Doc Workspace URL </label>
-                <input class="form-control" name="gdoc" id="gdoc" required value= {{ gdoc }}>
-                <br/>
-                <label for="region"> Region </label>
-                <input name="region" id="region" type="number" min=1 max=9 style="width:2.5em;" value= {{ region }} >
-                <label for="insula">, Insula </label>
-                <input name="insula" id="insula" style="width:2.5em;" value= {{ insula }} >
-                <label for="property">, Property</label>
-                <input name="property" id="property" style="width:2.5em;" value= {{ property }} >
-                <label for="room">, Room</label>
-                <input name="room" id="room" style="width:2.5em;" value= {{ room }} >
                 <br/>
                 <input type="submit" class="btn btn-primary" value="Get Started">
             </form>

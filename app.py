@@ -47,9 +47,9 @@ romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 
 # Connect to Google Docs
 def getWorksheet():
-	tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
-	request = sheets_client.spreadsheets().get(spreadsheetId=tracking_ws)
-	response = request.execute()
+	
+
+	return values
 
 	# ppp_ids_4df = tracking_tab.col_values(1)[2:]
 
@@ -96,39 +96,33 @@ def dataTranslate(data):
 
 @app.route("/") # Home page
 def index():
-	getWorksheet()
-	reg = ins = prop = room = arc = gdoc = ""
+	arc = ""
 
-	if (session.get('region')):
-		reg = session['region']
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
 	if (session.get('arc')):
 		arc = session['arc']
-	if (session.get('gdoc')):
-		gdoc = session['gdoc']
 
-
-	return render_template('index.html',
-		region=reg, insula=ins, property=prop, room=room,
-		gdoc=gdoc, arc=arc)
+	return render_template('index.html', arc=arc, error="")
 
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():
-	session['arc'] = request.form['arc']
-	session['gdoc'] = request.form['gdoc']
-	if (request.form.get('region')):
-		session['region'] = request.form['region']
-	if (request.form.get('insula')):
-		session['insula'] = request.form['insula']
-	if (request.form.get('property')):
-		session['property'] = request.form['property']
-	if (request.form.get('room')):
-		session['room'] = request.form['room']
+	arc = request.form['arc']
+	session['arc'] = arc
+
+	sheet = sheets_client.spreadsheets()
+	tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
+	ranges = "Workflow_Tracking!A3:L87075"
+	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
+	values = gsheet.get('values', [])
+
+	arclist = values[6]
+	if arc in arclist:
+		arcind = arclist.index(arc)
+		session['gdoc'] = values[10][arcind]
+		room = values[0][arcind]
+		session['insula'] = room
+	else:
+		return render_template('index.html', arc=arc, error="I'm sorry, that's an invalid ARC. Please try again.")
+
 	return redirect('/PPP')
 
 @app.route("/PPP") # PPP page
