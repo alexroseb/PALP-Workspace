@@ -43,41 +43,6 @@ box_auth = boxsdk.JWTAuth(
 box_access_token = box_auth.authenticate_instance()
 box_client = boxsdk.Client(box_auth)
 
-romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
-
-# Connect to Google Docs
-def getWorksheet():
-	
-
-	return values
-
-	# ppp_ids_4df = tracking_tab.col_values(1)[2:]
-
-	# ppp_spaces = list(set(ppp_ids_4df ))
-
-	# plod_properties_4df = []
-	# plod_spaces_4df = []
-
-
-	# for s in ppp_ids_4df:
-	# 	s = re.sub("IX","9",s)
-	# 	s = re.sub("IV","4",s)
-	# 	s = re.sub("VIII","8",s)
-	# 	s = re.sub("VII","7",s)
-	# 	s = re.sub("VI","6",s)
-	# 	s = re.sub("V","5",s)
-	# 	s = re.sub("III","3",s)
-	# 	s = re.sub("II","2",s)
-	# 	s = re.sub("I","1",s)
-
-	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
-	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
-
-	# arc_features_4df = tracking_tab.col_values(7)[2:]
-
-	# arc_peer_4df = tracking_tab.col_values(9)[2:]
-	# arc_final_4df = tracking_tab.col_values(10)[2:]
-
 # Google Translate utility
 def dataTranslate(data):
 	indices = []
@@ -94,6 +59,14 @@ def dataTranslate(data):
 		dataplustrans.append(dlist)
 	return dataplustrans, indices
 
+#Roman numeral utility
+def toRoman(data):
+	romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+	romin = int(data) - 1
+	if romin >= 0 and romin < len(romans):
+		romreg = romans[romin]
+	return romreg
+
 @app.route("/") # Home page
 def index():
 	arc = ""
@@ -108,18 +81,26 @@ def init():
 	arc = request.form['arc']
 	session['arc'] = arc
 
+	#Connect to Google Sheets
 	sheet = sheets_client.spreadsheets()
 	tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
 	ranges = "Workflow_Tracking!A3:L87075"
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
 
-	arclist = values[6]
+	arclist = values[6] #Column G
 	if arc in arclist:
 		arcind = arclist.index(arc)
-		session['gdoc'] = values[10][arcind]
+		session['gdoc'] = values[10][arcind] #Column K
 		room = values[0][arcind]
-		session['insula'] = room
+
+	# 	plod_properties_4df.append(re.sub(r'^(.)(..)(..).*?$',r'r\1-i\2-p\3',s).replace('0',''))
+	# 	plod_spaces_4df.append(re.sub(r'^(.)(..)(..)(.*?)$',r'r\1-i\2-p\3-space-\4',s).replace('0',''))
+
+	# arc_features_4df = tracking_tab.col_values(7)[2:]
+
+	# arc_peer_4df = tracking_tab.col_values(9)[2:]
+	# arc_final_4df = tracking_tab.col_values(10)[2:]
 	else:
 		return render_template('index.html', arc=arc, error="I'm sorry, that's an invalid ARC. Please try again.")
 
@@ -195,10 +176,7 @@ def showPPM():
 	ppmQuery = "SELECT id, description FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
 	loc = []
 	if (session.get('region')):
-		romin = int(session['region']) - 1
-		if romin >= 0 and romin < len(romans):
-			romreg = romans[romin]
-			loc.append(romreg)
+		loc.append(toRoman(session['region']))
 	else:
 		loc.append("%")
 	if (session.get('insula')):
