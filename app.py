@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 import boxsdk
 import json
 import re
+from datetime import date
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -25,7 +26,7 @@ tr_credentials = service_account.Credentials.from_service_account_file("My Proje
 translate_client = translate.Client(credentials=tr_credentials)
 
 #Google Sheets credentials
-scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+scopes = ['https://www.googleapis.com/auth/spreadsheets']
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 
@@ -66,6 +67,8 @@ def toRoman(data):
 	romin = int(data) - 1
 	if romin >= 0 and romin < len(romans):
 		romreg = romans[romin]
+	else:
+		romreg = data
 	return romreg
 
 @app.route("/") # Home page
@@ -188,15 +191,24 @@ def showPPM():
 	else:
 		loc.append("%")
 	if (session.get('insula')):
-		loc.append(session['insula'])
+		ins = session['insula']
+		if session['insula'][0] == "0":
+			ins = session['insula'].replace("0","")
+		loc.append(ins)
 	else:
 		loc.append("%")
 	if (session.get('property')):
-		loc.append(session['property'])
+		prop = session['property'] 
+		if session['property'][0] == "0":
+			prop = session['property'].replace("0","")
+		loc.append(prop)
 	else:
 		loc.append("%")
 	if (session.get('room')):
-		loc.append(session['room'])
+		room = session['room'] 
+		if session['room'][0] == "0":
+			room = session['room'].replace("0","")
+		loc.append(room)
 	else:
 		loc.append("%")
 
@@ -205,6 +217,9 @@ def showPPM():
 	ppmCur.close()
 
 	dataplustrans, indices = dataTranslate(data)
+
+	for d in dataplustrans:
+		d.insert(1, "https://via.placeholder.com/150x150")
 
 	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
 
@@ -565,62 +580,70 @@ def clearData():
 
 	return render_template('index.html')
 
-@app.route('/savedata') #Copy saved data to database - may change
+@app.route('/savedata') #Copy saved data to Google Sheets
 def saveData():
 
-	cur = mysql.connection.cursor()
-	saveQuery = """INSERT INTO FinalData(ARC, Region, Insula, Property, Room, PPM, PPP, PPMImgs, PinP)
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-		ON DUPLICATE KEY UPDATE
-		Region = VALUES(Region),
-		Insula = VALUES(Insula),
-		Property = VALUES(Property),
-		Room = VALUES(Room),
-		PPM = VALUES(PPM),
-		PPP = VALUES(PPP),
-		PPMImgs = VALUES(PPMImgs),
-		PinP = VALUES(PinP);"""
-
-	queryvars = [session['arc']]
+	timestamp = date.today()
+	queryvars = [timestamp]
+	queryvars.append(session['arc'])
 	if (session.get('region')):
-		queryvars.append(session['region'])
+		queryvars.append(str(session['region']))
 	else:
 		queryvars.append("")
 	if (session.get('insula')):
-		queryvars.append(session['insula'])
+		queryvars.append(str(session['insula']))
 	else:
 		queryvars.append("")
 	if (session.get('property')):
-		queryvars.append(session['property'])
+		queryvars.append(str(session['property']))
 	else:
 		queryvars.append("")
 	if (session.get('room')):
-		queryvars.append(session['room'])
+		queryvars.append(str(session['room']))
 	else:
 		queryvars.append("")
 
+	if (session.get('carryoverPPPids')):
+		queryvars.append(str(session['carryoverPPPids']))
+	else:
+		queryvars.append("")
+#Add in PPP italian, placeholder for now
+	queryvars.append("")
 
 	if (session.get('carryoverPPP')):
-		queryvars.append(session['carryoverPPP'])
+		queryvars.append(str(session['carryoverPPP']))
 	else:
 		queryvars.append("")
+
+	if (session.get('carryoverPPMids')):
+		queryvars.append(str(session['carryoverPPMids']))
+	else:
+		queryvars.append("")
+#Add in PPM italian, placeholder for now
+	queryvars.append("")
+
 	if (session.get('carryoverPPM')):
-		queryvars.append(session['carryoverPPM'])
+		queryvars.append(str(session['carryoverPPM']))
 	else:
 		queryvars.append("")
+
+
 	if (session.get('carryoverPPMImgs')):
-		queryvars.append(session['carryoverPPMImgs'])
+		queryvars.append(str(session['carryoverPPMImgs']))
 	else:
 		queryvars.append("")
 	if (session.get('carryoverPinP')):
-		queryvars.append(session['carryoverPinP'])
+		queryvars.append(str(session['carryoverPinP']))
 	else:
 		queryvars.append("")
 
+	values = [queryvars]
+	print(values)
+	body = {
+	    'values': values
+	}
 
-	cur.execute(saveQuery, queryvars)
-	mysql.connection.commit()
-	cur.close()
+	result = sheets_client.spreadsheets().values().append(spreadsheetId="1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ",range="Sheet1", valueInputOption="USER_ENTERED", insertDataOption="INSERT_ROWS", body=body).execute()
 
 	return redirect(request.referrer)
 
