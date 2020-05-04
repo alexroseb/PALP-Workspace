@@ -298,7 +298,9 @@ def showPinP():
 	pinp = reg = ins = prop = room = ""
 
 	pinpCur = mysql.connection.cursor()
-	pinpQuery = "Select tbl_webpage_images.id as wi_id, tbl_webpage_images.img_url as img_url, tbl_webpage_images.azure_img_desc as azure_img_desc, tbl_webpage_images.azure_img_tags as azure_img_tags, tbl_webpage_images.image_hash as image_hash, tbl_webpage_images.img_alt as img_alt, tbl_webpages.folder as folder, tbl_webpages.file_name as file_name from tbl_webpage_images left join tbl_addresses_x on tbl_webpage_images.id = tbl_addresses_x.wi_id left join tbl_addresses on tbl_addresses_x.add_id = tbl_addresses.id left join tbl_webpages on tbl_webpages.id = tbl_webpage_images.id_webpage where tbl_addresses.pinp_regio LIKE %s and tbl_addresses.pinp_insula LIKE %s  and tbl_addresses.pinp_entrance LIKE %s ORDER BY wi_id;"
+
+	#Join tbl_webpage_images and tbl_box_images on id
+	pinpQuery = "SELECT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
 
 	loc = []
 	if (session.get('region')):
@@ -326,8 +328,14 @@ def showPinP():
 	pinpCur.close()
 
 	indices = []
+	thumbnails = {}
 	for d in data:
 		indices.append(d[0])
+		try:
+			thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg')
+		except boxsdk.BoxAPIException as exception:
+			thumbnail = exception.request_id
+		thumbnails[d[0]] = thumbnail
 
 	if (session.get('region')):
 		reg = session['region']
@@ -342,7 +350,7 @@ def showPinP():
 		pinp = session['carryoverPinP']
 
 	return render_template('PinP.html',
-		catextpinp=pinp, dbdata = data, indices = indices,
+		catextpinp=pinp, dbdata = data, indices = indices, thumbnails = thumbnails,
 		region=reg, insula=ins, property=prop, room=room)
 
 @app.route('/help') #Help page - the info here is in the HTML
@@ -447,7 +455,7 @@ def showCarryover():
 	try:
 		thumbnail = box_client.file(file_id).get_thumbnail(extension='jpg')
 	except boxsdk.BoxAPIException as exception:
-		thumbnail = exception.code
+		thumbnail = exception.status
 
 	return render_template('imgs.html',
 		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata=pinp, thumbnail=thumbnail,

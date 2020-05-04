@@ -77,8 +77,8 @@
                     {% for row in dbdata %}
                         <tr>
                             <td> {{row[0]}} </td>
-                            <td> <a href={{row[1]}}><img class="img-fluid img-thumbnail" src={{row[1]}} alt=""></a> </td>
-                            <td>{{row[5]}}</td>
+                            <td> <a href={{thumbnails[row[0]]}}><img class="img-fluid img-thumbnail" src={{thumbnails[row[0]]}} alt=""></a> </td>
+                            <td>{{row[2]}}</td>
                             <td> 
                                 <form>
                                     <input type="checkbox" class="form-control" name="{{row[0]}}" id="{{row[0]}}" >
