@@ -8,6 +8,7 @@ import boxsdk
 import json
 import re
 from datetime import date
+import os
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -345,12 +346,15 @@ def showPinP():
 	indices = []
 	thumbnails = {}
 	for d in data:
-		indices.append(d[0])
+		indices.append(d[1])
 		try:
-			thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg')
+			thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg', min_width=200)
 		except boxsdk.BoxAPIException as exception:
-			thumbnail = exception.request_id
-		thumbnails[d[0]] = thumbnail
+			thumbnail = exception.message
+		filename = str(d[1]) + ".jpg"
+		if not os.path.exists("static/images"+filename):
+			with open(os.path.join("static/images",filename), "wb") as f:
+				f.write(thumbnail)
 
 	if (session.get('region')):
 		reg = session['region']
@@ -465,15 +469,8 @@ def showCarryover():
 	if (session.get('carryoverPinPids')):
 		pinp = session['carryoverPinPids']
 
-	file_id = '525898106477'
-
-	try:
-		thumbnail = box_client.file(file_id).get_thumbnail(extension='jpg')
-	except boxsdk.BoxAPIException as exception:
-		thumbnail = exception.status
-
 	return render_template('imgs.html',
-		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata=pinp, thumbnail=thumbnail,
+		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
 		region=reg, insula=ins, property=prop, room=room)
 
 @app.route('/carryover', methods=['POST']) #Carryover form found on multiple pages

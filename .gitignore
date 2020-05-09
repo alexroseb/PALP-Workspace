@@ -17,3 +17,4 @@ README.txt
 *.cfg
 *.json
 tmp/
+static/images/
