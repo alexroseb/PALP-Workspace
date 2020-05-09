@@ -221,14 +221,22 @@ def showPPM():
 	dataplustrans, indices = dataTranslate(data)
 
 	imgs = []
+	itemid = "0"
 	for d in data:
-		box_id = box_client.search().query(query=d[2], limit=1, file_extensions=['jpg'], ancestor_folder_ids="87326350215", fields=["id"])
-		imgs.append(box_id['id'])
+		print(d[2])
+		searchid = "\"" + d[2] + "\""
+		itemid = ""
+		box_id = box_client.search().query(query=searchid, file_extensions=['jpg'], ancestor_folder_ids="97077887697,87326350215", fields=["id", "name"], content_types=["name"])
+		for item in box_id:
+			if item.name == d[2]
+				itemid = item.id
+				imgs.append(itemid)
+				print(itemid)
 		try:
-			thumbnail = box_client.file(box_id['id']).get_thumbnail(extension='jpg', min_width=200)
+			thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
 		except boxsdk.BoxAPIException as exception:
-			thumbnail = exception.message
-		filename = str(d[1]) + ".jpg"
+			thumbnail = bytes(exception.message, 'utf-8')
+		filename = str(itemid) + ".jpg"
 		if not os.path.exists("static/images/"+filename):
 			with open(os.path.join("static/images",filename), "wb") as f:
 				f.write(thumbnail)
