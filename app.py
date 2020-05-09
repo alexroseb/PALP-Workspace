@@ -221,11 +221,10 @@ def showPPM():
 	dataplustrans, indices = dataTranslate(data)
 
 	imgs = []
-	itemid = "0"
 	for d in data:
+		itemid = "0"
 		print(d[2])
 		searchid = "\"" + d[2] + "\""
-		itemid = ""
 		box_id = box_client.search().query(query=searchid, file_extensions=['jpg'], ancestor_folder_ids="97077887697,87326350215", fields=["id", "name"], content_types=["name"])
 		for item in box_id:
 			if item.name == d[2]:
@@ -242,6 +241,8 @@ def showPPM():
 				f.write(thumbnail)
 	for x in range(len(dataplustrans)):
 		j = dataplustrans[x]
+		if imgs[x] == "0":
+			j.insert(1, "not_found")
 		j.insert(1, imgs[x])
 
 	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
