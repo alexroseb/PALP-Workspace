@@ -9,6 +9,7 @@ import json
 import re
 from datetime import date
 import os
+import glob
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -352,7 +353,7 @@ def showPinP():
 		except boxsdk.BoxAPIException as exception:
 			thumbnail = exception.message
 		filename = str(d[1]) + ".jpg"
-		if not os.path.exists("static/images"+filename):
+		if not os.path.exists("static/images/"+filename):
 			with open(os.path.join("static/images",filename), "wb") as f:
 				f.write(thumbnail)
 
@@ -466,41 +467,42 @@ def showCarryover():
 		ppm, ppminds = dataTranslate(dataList)
 	if (session.get('carryoverPPMImgsids')):
 		ppmimg = session['carryoverPPMImgsids']
-	if (session.get('carryoverPinPids')):
-		pinp = session['carryoverPinPids']
+	if (session.get('carryoverPinP')):
+		pp = session['carryoverPinP'].replace(",", ";").replace("\"", "")
+		pinp = pp.split(";")
 
 	return render_template('imgs.html',
 		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
 		region=reg, insula=ins, property=prop, room=room)
 
-@app.route('/carryover', methods=['POST']) #Carryover form found on multiple pages
-# Deprecated?
-def carryover_text():
-	if (request.form.get('catextppp')):
-		if (session.get('carryoverPPP')):
-			session['carryoverPPP'] += "; " + request.form['catextppp']
-		else:
-			session['carryoverPPP'] = request.form['catextppp']
+# @app.route('/carryover', methods=['POST']) #Carryover form found on multiple pages
+# # Deprecated?
+# def carryover_text():
+# 	if (request.form.get('catextppp')):
+# 		if (session.get('carryoverPPP')):
+# 			session['carryoverPPP'] += "; " + request.form['catextppp']
+# 		else:
+# 			session['carryoverPPP'] = request.form['catextppp']
 
-	if (request.form.get('catextppm')):
-		if (session.get('carryoverPPM')):
-			session['carryoverPPM'] += "; " + request.form['catextppm']
-		else:
-			session['carryoverPPM'] = request.form['catextppm']
+# 	if (request.form.get('catextppm')):
+# 		if (session.get('carryoverPPM')):
+# 			session['carryoverPPM'] += "; " + request.form['catextppm']
+# 		else:
+# 			session['carryoverPPM'] = request.form['catextppm']
 
-	if (request.form.get('catextppmimg')):
-		if (session.get('carryoverPPMImgs')):
-			session['carryoverPPMImgs'] += "; " + request.form['catextppmimg']
-		else:
-			session['carryoverPPMImgs'] = request.form['catextppmimg']
+# 	if (request.form.get('catextppmimg')):
+# 		if (session.get('carryoverPPMImgs')):
+# 			session['carryoverPPMImgs'] += "; " + request.form['catextppmimg']
+# 		else:
+# 			session['carryoverPPMImgs'] = request.form['catextppmimg']
 
-	if (request.form.get('catextpinp')):
-		if (session.get('carryoverPinP')):
-			session['carryoverPinP'] += "; " + request.form['catextpinp']
-		else:
-			session['carryoverPinP'] = request.form['catextpinp']
+# 	if (request.form.get('catextpinp')):
+# 		if (session.get('carryoverPinP')):
+# 			session['carryoverPinP'] += "; " + request.form['catextpinp']
+# 		else:
+# 			session['carryoverPinP'] = request.form['catextpinp']
 
-	return redirect(request.referrer)
+# 	return redirect(request.referrer)
 
 @app.route('/carryover-button') #Carryover button found on multiple pages
 def carryover_button():
@@ -574,6 +576,13 @@ def clearData():
 	session['room'] = ""
 
 	session['gdoc'] = ""
+
+	files = glob.glob('static/images/*')
+	for f in files:
+		try:
+			os.remove(f)
+		except OSError as e:
+			print("Error: %s : %s" % (f, e.strerror))
 
 	return render_template('index.html')
 
