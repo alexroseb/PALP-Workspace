@@ -186,7 +186,7 @@ def showPPM():
 
 	#PPM data has individual location columns
 	ppmCur = mysql.connection.cursor()
-	ppmQuery = "SELECT id, description FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
+	ppmQuery = "SELECT id, description, image_path FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
 	loc = []
 	if (session.get('region')):
 		loc.append(toRoman(session['region']))
@@ -220,8 +220,21 @@ def showPPM():
 
 	dataplustrans, indices = dataTranslate(data)
 
-	for d in dataplustrans:
-		d.insert(1, "https://via.placeholder.com/150x150")
+	imgs = []
+	for d in data:
+		box_id = box_client.search().query(query=d[2], limit=1, file_extensions=['jpg'], ancestor_folder_ids="87326350215", fields=["id"])
+		imgs.append(box_id['id'])
+		try:
+			thumbnail = box_client.file(box_id['id']).get_thumbnail(extension='jpg', min_width=200)
+		except boxsdk.BoxAPIException as exception:
+			thumbnail = exception.message
+		filename = str(d[1]) + ".jpg"
+		if not os.path.exists("static/images/"+filename):
+			with open(os.path.join("static/images",filename), "wb") as f:
+				f.write(thumbnail)
+	for x in range(len(dataplustrans)):
+		j = dataplustrans[x]
+		j.insert(1, imgs[x])
 
 	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
 
@@ -468,7 +481,7 @@ def showCarryover():
 	if (session.get('carryoverPPMImgsids')):
 		ppmimg = session['carryoverPPMImgsids']
 	if (session.get('carryoverPinP')):
-		pp = session['carryoverPinP'].replace(",", ";").replace("\"", "")
+		pp = session['carryoverPinP'].replace(",", ";").replace("\"", "").replace(" ", "")
 		pinp = pp.split(";")
 
 	return render_template('imgs.html',
@@ -556,7 +569,7 @@ def carryover_button():
 		else:
 			session['carryoverPinP'] = request.args['catextpinp']
 
-	return redirect(request.referrer)
+	return redirect("/data")
 
 @app.route('/cleardata') #Start over, redirects to home page
 def clearData():
