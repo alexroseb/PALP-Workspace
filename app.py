@@ -228,7 +228,7 @@ def showPPM():
 		itemid = ""
 		box_id = box_client.search().query(query=searchid, file_extensions=['jpg'], ancestor_folder_ids="97077887697,87326350215", fields=["id", "name"], content_types=["name"])
 		for item in box_id:
-			if item.name == d[2]
+			if item.name == d[2]:
 				itemid = item.id
 				imgs.append(itemid)
 				print(itemid)
