@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 import boxsdk
 import json
 import re
-from datetime import date
+from datetime import datetime
 import os
 import glob
 
@@ -216,7 +216,6 @@ def showPPM():
 
 	ppmCur.execute(ppmQuery, loc)
 	data = ppmCur.fetchall()
-	ppmCur.close()
 
 	dataplustrans, indices = dataTranslate(data)
 
@@ -241,9 +240,12 @@ def showPPM():
 				f.write(thumbnail)
 	for x in range(len(dataplustrans)):
 		j = dataplustrans[x]
-		if imgs[x] == "0":
-			j.insert(1, "not_found")
 		j.insert(1, imgs[x])
+		imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
+		ppmCur.execute(imgQuery, [imgs[x], j[0]])
+		mysql.connection.commit()
+	
+	ppmCur.close()
 
 	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
 
@@ -482,13 +484,14 @@ def showCarryover():
 	if (session.get('carryoverPPMids')):
 		inn = ', '.join(session['carryoverPPMids'])
 		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT id, description FROM PPM WHERE id in (" + inn +") ;"
+		carryQuery = "SELECT id, description, image_id FROM PPM WHERE id in (" + inn +") ;"
 		carryCur.execute(carryQuery)
 		dataList = carryCur.fetchall()
 		carryCur.close()
-		ppm, ppminds = dataTranslate(dataList)
-	if (session.get('carryoverPPMImgsids')):
-		ppmimg = session['carryoverPPMImgsids']
+		session['carryoverPPMImgs'] = []
+		for x in dataList:
+			session['carryoverPPMImgs'].append(x[2])
+		ppm, ppminds = dataTranslate(dataList)		
 	if (session.get('carryoverPinP')):
 		pp = session['carryoverPinP'].replace(",", ";").replace("\"", "").replace(" ", "")
 		pinp = pp.split(";")
@@ -584,7 +587,7 @@ def carryover_button():
 def clearData():
 	session['carryoverPPP'] = ""
 	session['carryoverPPM'] = ""
-	session['carryoverPPMImgs'] = ""
+	session['carryoverPPMImgs'] = []
 	session['carryoverPinP'] = ""
 	session['carryoverPPPids'] = []
 	session['carryoverPPMids'] = []
@@ -611,7 +614,8 @@ def clearData():
 @app.route('/savedata') #Copy saved data to Google Sheets
 def saveData():
 
-	timestamp = date.today()
+	now = datetime.now()
+	timestamp = now.strftime("%m/%d/%Y, %H:%M:%S")
 	queryvars = [timestamp]
 	queryvars.append(session['arc'])
 	if (session.get('region')):
@@ -631,10 +635,10 @@ def saveData():
 	else:
 		queryvars.append("")
 
-	if (session.get('carryoverPPPids')):
-		queryvars.append(str(session['carryoverPPPids']))
-	else:
-		queryvars.append("")
+	# if (session.get('carryoverPPPids')):
+	# 	queryvars.append(str(session['carryoverPPPids']))
+	# else:
+	# 	queryvars.append("")
 #Add in PPP italian, placeholder for now
 	queryvars.append("")
 
@@ -643,10 +647,10 @@ def saveData():
 	else:
 		queryvars.append("")
 
-	if (session.get('carryoverPPMids')):
-		queryvars.append(str(session['carryoverPPMids']))
-	else:
-		queryvars.append("")
+	# if (session.get('carryoverPPMids')):
+	# 	queryvars.append(str(session['carryoverPPMids']))
+	# else:
+	# 	queryvars.append("")
 #Add in PPM italian, placeholder for now
 	queryvars.append("")
 
