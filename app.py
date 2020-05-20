@@ -230,6 +230,7 @@ def showPPM():
 				itemid = item.id
 				imgs.append(itemid)
 				print(itemid)
+				break
 		try:
 			thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
 		except boxsdk.BoxAPIException as exception:
