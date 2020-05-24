@@ -135,7 +135,7 @@ def init():
 @app.route("/PPP") # PPP page
 def showPPP():
 
-	if session["logged_in"]:
+	if session.get('logged_in') and session["logged_in"]:
 		# PPP ids are a combination of location data
 		pppCur = mysql.connection.cursor()
 		pppQuery = "SELECT id, description FROM PPP WHERE id LIKE %s;"
@@ -202,7 +202,7 @@ def showPPP():
 @app.route('/PPM') #PPM page
 def showPPM():
 
-	if session["logged_in"]:
+	if session.get('logged_in') and session["logged_in"]:
 
 		#PPM data has individual location columns
 		ppmCur = mysql.connection.cursor()
@@ -361,7 +361,7 @@ def updatePPM():
 
 @app.route('/PinP') #PinP page
 def showPinP():
-	if session["logged_in"]:
+	if session.get('logged_in') and session["logged_in"]:
 
 		pinp = reg = ins = prop = room = ""
 
@@ -462,73 +462,84 @@ def GIS():
 
 @app.route('/descriptions') #Copying data from workspace to Google Sheet 
 def showDescs():
-	ppp = ppm = ppmimg = pinp = reg = ins = prop = room = gdoc = ""
+	if session.get('logged_in') and session["logged_in"]:
 
-	if (session.get('region')):
-		reg = session['region']
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
+		ppp = ppm = ppmimg = pinp = reg = ins = prop = room = gdoc = ""
 
-	if (session.get('carryoverPPP')):
-		ppp = session['carryoverPPP']
-	if (session.get('carryoverPPM')):
-		ppm = session['carryoverPPM']
-	if (session.get('carryoverPPMImgs')):
-		ppmimg = session['carryoverPPMImgs']
-	if (session.get('carryoverPinP')):
-		pinp = session['carryoverPinP']
+		if (session.get('region')):
+			reg = session['region']
+		if (session.get('insula')):
+			ins = session['insula']
+		if (session.get('property')):
+			prop = session['property']
+		if (session.get('room')):
+			room = session['room']
 
-	if (session.get('gdoc')):
-		gdoc = session['gdoc']
+		if (session.get('carryoverPPP')):
+			ppp = session['carryoverPPP']
+		if (session.get('carryoverPPM')):
+			ppm = session['carryoverPPM']
+		if (session.get('carryoverPPMImgs')):
+			ppmimg = session['carryoverPPMImgs']
+		if (session.get('carryoverPinP')):
+			pinp = session['carryoverPinP']
 
-	return render_template('descs.html',
-		carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
-		region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
+		if (session.get('gdoc')):
+			gdoc = session['gdoc']
+
+		return render_template('descs.html',
+			carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
+			region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
 
 @app.route('/data') #Show carried over data
 def showCarryover():
-	ppp = ppm = ppmimg = pinp = []
-	reg = ins = prop = room = ""
+	if session.get('logged_in') and session["logged_in"]:
 
-	if (session.get('region')):
-		reg = session['region']
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
+		ppp = ppm = ppmimg = pinp = []
+		reg = ins = prop = room = ""
 
-	if (session.get('carryoverPPPids')):
-		carryCur = mysql.connection.cursor()
-		inn = ', '.join(session['carryoverPPPids'])
-		carryQuery = "SELECT id, description FROM PPP WHERE id in (" + inn +") ;"
-		carryCur.execute(carryQuery)
-		dataList = carryCur.fetchall()
-		carryCur.close()
-		ppp, pppinds = dataTranslate(dataList)
-	if (session.get('carryoverPPMids')):
-		inn = ', '.join(session['carryoverPPMids'])
-		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT id, description, image_id FROM PPM WHERE id in (" + inn +") ;"
-		carryCur.execute(carryQuery)
-		dataList = carryCur.fetchall()
-		carryCur.close()
-		session['carryoverPPMImgs'] = []
-		for x in dataList:
-			session['carryoverPPMImgs'].append(x[2])
-		ppm, ppminds = dataTranslate(dataList)		
-	if (session.get('carryoverPinP')):
-		pp = session['carryoverPinP'].replace(",", ";").replace("\"", "").replace(" ", "")
-		pinp = pp.split(";")
+		if (session.get('region')):
+			reg = session['region']
+		if (session.get('insula')):
+			ins = session['insula']
+		if (session.get('property')):
+			prop = session['property']
+		if (session.get('room')):
+			room = session['room']
 
-	return render_template('imgs.html',
-		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
-		region=reg, insula=ins, property=prop, room=room)
+		if (session.get('carryoverPPPids')):
+			carryCur = mysql.connection.cursor()
+			inn = ', '.join(session['carryoverPPPids'])
+			carryQuery = "SELECT id, description FROM PPP WHERE id in (" + inn +") ;"
+			carryCur.execute(carryQuery)
+			dataList = carryCur.fetchall()
+			carryCur.close()
+			ppp, pppinds = dataTranslate(dataList)
+		if (session.get('carryoverPPMids')):
+			inn = ', '.join(session['carryoverPPMids'])
+			carryCur = mysql.connection.cursor()
+			carryQuery = "SELECT id, description, image_id FROM PPM WHERE id in (" + inn +") ;"
+			carryCur.execute(carryQuery)
+			dataList = carryCur.fetchall()
+			carryCur.close()
+			session['carryoverPPMImgs'] = []
+			for x in dataList:
+				session['carryoverPPMImgs'].append(x[2])
+			ppm, ppminds = dataTranslate(dataList)		
+		if (session.get('carryoverPinP')):
+			pp = session['carryoverPinP'].replace(",", ";").replace("\"", "").replace(" ", "")
+			pinp = pp.split(";")
+
+		return render_template('imgs.html',
+			pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
+			region=reg, insula=ins, property=prop, room=room)
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
 
 @app.route('/carryover-button') #Carryover button found on multiple pages
 def carryover_button():
@@ -615,70 +626,75 @@ def clearData():
 @app.route('/savedata') #Copy saved data to Google Sheets
 def saveData():
 
-	now = datetime.now()
-	timestamp = now.strftime("%m/%d/%Y, %H:%M:%S")
-	queryvars = [timestamp]
-	queryvars.append(session['arc'])
-	if (session.get('region')):
-		queryvars.append(str(session['region']))
-	else:
-		queryvars.append("")
-	if (session.get('insula')):
-		queryvars.append(str(session['insula']))
-	else:
-		queryvars.append("")
-	if (session.get('property')):
-		queryvars.append(str(session['property']))
-	else:
-		queryvars.append("")
-	if (session.get('room')):
-		queryvars.append(str(session['room']))
-	else:
-		queryvars.append("")
+	if session.get('logged_in') and session["logged_in"]:
 
-	# if (session.get('carryoverPPPids')):
-	# 	queryvars.append(str(session['carryoverPPPids']))
-	# else:
-	# 	queryvars.append("")
-#Add in PPP italian, placeholder for now
-	queryvars.append("")
+		now = datetime.now()
+		timestamp = now.strftime("%m/%d/%Y, %H:%M:%S")
+		queryvars = [timestamp]
+		queryvars.append(session['arc'])
+		if (session.get('region')):
+			queryvars.append(str(session['region']))
+		else:
+			queryvars.append("")
+		if (session.get('insula')):
+			queryvars.append(str(session['insula']))
+		else:
+			queryvars.append("")
+		if (session.get('property')):
+			queryvars.append(str(session['property']))
+		else:
+			queryvars.append("")
+		if (session.get('room')):
+			queryvars.append(str(session['room']))
+		else:
+			queryvars.append("")
 
-	if (session.get('carryoverPPP')):
-		queryvars.append(str(session['carryoverPPP']))
-	else:
+		# if (session.get('carryoverPPPids')):
+		# 	queryvars.append(str(session['carryoverPPPids']))
+		# else:
+		# 	queryvars.append("")
+	#Add in PPP italian, placeholder for now
 		queryvars.append("")
 
-	# if (session.get('carryoverPPMids')):
-	# 	queryvars.append(str(session['carryoverPPMids']))
-	# else:
-	# 	queryvars.append("")
-#Add in PPM italian, placeholder for now
-	queryvars.append("")
+		if (session.get('carryoverPPP')):
+			queryvars.append(str(session['carryoverPPP']))
+		else:
+			queryvars.append("")
 
-	if (session.get('carryoverPPM')):
-		queryvars.append(str(session['carryoverPPM']))
-	else:
+		# if (session.get('carryoverPPMids')):
+		# 	queryvars.append(str(session['carryoverPPMids']))
+		# else:
+		# 	queryvars.append("")
+	#Add in PPM italian, placeholder for now
 		queryvars.append("")
 
+		if (session.get('carryoverPPM')):
+			queryvars.append(str(session['carryoverPPM']))
+		else:
+			queryvars.append("")
 
-	if (session.get('carryoverPPMImgs')):
-		queryvars.append(str(session['carryoverPPMImgs']))
+
+		if (session.get('carryoverPPMImgs')):
+			queryvars.append(str(session['carryoverPPMImgs']))
+		else:
+			queryvars.append("")
+		if (session.get('carryoverPinP')):
+			queryvars.append(str(session['carryoverPinP']))
+		else:
+			queryvars.append("")
+
+		values = [queryvars]
+		print(values)
+		body = {
+		    'values': values
+		}
+
+		result = sheets_client.spreadsheets().values().append(spreadsheetId="1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ",range="Sheet1", valueInputOption="USER_ENTERED", insertDataOption="INSERT_ROWS", body=body).execute()
+
+		return redirect(request.referrer)
 	else:
-		queryvars.append("")
-	if (session.get('carryoverPinP')):
-		queryvars.append(str(session['carryoverPinP']))
-	else:
-		queryvars.append("")
-
-	values = [queryvars]
-	print(values)
-	body = {
-	    'values': values
-	}
-
-	result = sheets_client.spreadsheets().values().append(spreadsheetId="1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ",range="Sheet1", valueInputOption="USER_ENTERED", insertDataOption="INSERT_ROWS", body=body).execute()
-
-	return redirect(request.referrer)
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
 
 @app.route('/search', methods=['POST']) #Search bar at top of pages
 def search():
