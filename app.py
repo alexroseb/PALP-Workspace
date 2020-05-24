@@ -84,6 +84,7 @@ def index():
 
 @app.route("/login", methods=['POST']) # Login form
 def login():
+	error = ""
 	with open('user.cfg', 'r') as user_cfg:
 		user_lines = user_cfg.read().splitlines()
 		username = user_lines[0]
@@ -91,8 +92,8 @@ def login():
 	if request.form['password'] == password and request.form['username'] == username:
 		session['logged_in'] = True
 	else:
-		flash('Sorry, wrong password!')
-	return home()
+		error = 'Sorry, wrong password!'
+	return render_template('index.html', arc="", error=error)
 
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():

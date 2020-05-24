@@ -47,13 +47,13 @@
         <div class="row">
             <h2> Welcome to the PALP Workspace! </h2>
         </div>
-
-        {{if session['logged_in']}}
-        <div class="row">
-            <p><strong>Please enter what you're working on:</strong></p>
-        </div>
         <div class="row">
             <p style="color:red; font-size: 1.875em;">{{error}}</p>
+        </div>
+
+        {% if session['logged_in'] %}
+        <div class="row">
+            <p><strong>Please enter what you're working on:</strong></p>
         </div>
         <div class="row">
             <form action="/init" method="POST">
@@ -70,7 +70,7 @@
             <p>Before getting started, make sure you are logged into <a href="https://accounts.google.com/login" target="_blank">Google</a> and <a href="https://app.box.com/login" target="_blank">Box</a>.</p>
         </div>
 
-        {{else}}
+        {% else %}
         <div class="row">
             <form action="/login" method="POST">
                 <label for="username"> Username </label>
@@ -83,7 +83,7 @@
             </form>
         </div>
 
-        {{endif}}
+        {% endif %}
     </div>
 </body>
  

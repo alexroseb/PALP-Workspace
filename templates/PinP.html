@@ -57,6 +57,7 @@
                 </ul>
             </nav>
         </div>
+        {% if session['logged_in'] %}
         <div class="row">
             <table class="table table-bordered">
                 <thead>
@@ -92,6 +93,22 @@
         <div class="row">
             <button class="btn btn-outline-primary" id="copy">Copy selected images. </button>
         </div>
+        {% else %}
+        <div class="row">
+            <p style="color:red; font-size: 1.875em;">Sorry, this page is only accessible by logging in. </p>
+        </div>
+        <div class="row">
+            <form action="/login" method="POST">
+                <label for="username"> Username </label>
+                <input class="form-control" name="username" id="username" required>
+                <br/>
+                <label for="password"> Password </label>
+                <input class="form-control" name="password" id="password" required>
+                <br/>
+                <input type="submit" class="btn btn-primary" value="Log in">
+            </form>
+        </div>
+        {% endif %}
     </div>
     <script type="text/javascript">
         $("#copy").click(function(){
