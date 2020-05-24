@@ -135,170 +135,181 @@ def init():
 @app.route("/PPP") # PPP page
 def showPPP():
 
-	# PPP ids are a combination of location data
-	pppCur = mysql.connection.cursor()
-	pppQuery = "SELECT id, description FROM PPP WHERE id LIKE %s;"
-	loc = ""
-	if (session.get('region')):
-		loc += session['region']
-	if (session.get('insula')):
-		loc += session['insula']
-	if (session.get('property')):
-		loc += session['property']
-	if (session.get('room')):
-		loc += session['room']
+	if session["logged_in"]:
+		# PPP ids are a combination of location data
+		pppCur = mysql.connection.cursor()
+		pppQuery = "SELECT id, description FROM PPP WHERE id LIKE %s;"
+		loc = ""
+		if (session.get('region')):
+			loc += session['region']
+		if (session.get('insula')):
+			loc += session['insula']
+		if (session.get('property')):
+			loc += session['property']
+		if (session.get('room')):
+			loc += session['room']
 
-	if loc != "":
-		loc += "%"
+		if loc != "":
+			loc += "%"
 
-	pppCur.execute(pppQuery, [loc])
-	data = pppCur.fetchall()
-	pppCur.close()
+		pppCur.execute(pppQuery, [loc])
+		data = pppCur.fetchall()
+		pppCur.close()
 
-	dataplustrans, indices = dataTranslate(data)
+		dataplustrans, indices = dataTranslate(data)
 
-	ppp = reg = ins = prop = room = iframeurl = ""
+		ppp = reg = ins = prop = room = iframeurl = ""
 
-	#each region has its own PDF doc
-	if (session.get('region')):
-		reg = session['region']
-		if session['region'] == "1":
-			iframeurl = "https://umass.app.box.com/embed/s/t1a98m2my6eoxjciwqa0fpcmth2zwe3b?sortColumn=date&view=list"
-		if session['region'] == "2":
-			iframeurl = "https://umass.app.box.com/embed/s/j8ln3zdz61rh9aiszhhs3b0pn20dv2ky?sortColumn=date&view=list"
-		if session['region'] == "3":
-			iframeurl = "https://umass.app.box.com/embed/s/mgki1vhjmijzpcjqpb37vucfozqhr6kh?sortColumn=date&view=list"
-		if session['region'] == "4":
-			iframeurl = ""
-		if session['region'] == "5":
-			iframeurl = "https://umass.app.box.com/embed/s/398sfo7og26lqms6a7cynwczomujt7b8?sortColumn=date&view=list"
-		if session['region'] == "6":
-			iframeurl = "https://umass.app.box.com/embed/s/vi6ysrxgfr4dcoc5x87alu82d2lakua5?sortColumn=date&view=list"
-		if session['region'] == "7":
-			iframeurl = "https://umass.app.box.com/embed/s/26wkz8v3cqhkrwmeipas1jtuz0eobm3z?sortColumn=date&view=list"
-		if session['region'] == "8":
-			iframeurl = "https://umass.app.box.com/embed/s/aucwrzc5k7dtm786itiwc4gch91nr83k?sortColumn=date&view=list"
-		if session['region'] == "9":
-			iframeurl = "https://umass.app.box.com/embed/s/fxiqa4fu8ki1zmf3oiq357fgaiegxd48?sortColumn=date&view=list"
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
+		#each region has its own PDF doc
+		if (session.get('region')):
+			reg = session['region']
+			if session['region'] == "1":
+				iframeurl = "https://umass.app.box.com/embed/s/t1a98m2my6eoxjciwqa0fpcmth2zwe3b?sortColumn=date&view=list"
+			if session['region'] == "2":
+				iframeurl = "https://umass.app.box.com/embed/s/j8ln3zdz61rh9aiszhhs3b0pn20dv2ky?sortColumn=date&view=list"
+			if session['region'] == "3":
+				iframeurl = "https://umass.app.box.com/embed/s/mgki1vhjmijzpcjqpb37vucfozqhr6kh?sortColumn=date&view=list"
+			if session['region'] == "4":
+				iframeurl = ""
+			if session['region'] == "5":
+				iframeurl = "https://umass.app.box.com/embed/s/398sfo7og26lqms6a7cynwczomujt7b8?sortColumn=date&view=list"
+			if session['region'] == "6":
+				iframeurl = "https://umass.app.box.com/embed/s/vi6ysrxgfr4dcoc5x87alu82d2lakua5?sortColumn=date&view=list"
+			if session['region'] == "7":
+				iframeurl = "https://umass.app.box.com/embed/s/26wkz8v3cqhkrwmeipas1jtuz0eobm3z?sortColumn=date&view=list"
+			if session['region'] == "8":
+				iframeurl = "https://umass.app.box.com/embed/s/aucwrzc5k7dtm786itiwc4gch91nr83k?sortColumn=date&view=list"
+			if session['region'] == "9":
+				iframeurl = "https://umass.app.box.com/embed/s/fxiqa4fu8ki1zmf3oiq357fgaiegxd48?sortColumn=date&view=list"
+		if (session.get('insula')):
+			ins = session['insula']
+		if (session.get('property')):
+			prop = session['property']
+		if (session.get('room')):
+			room = session['room']
 
-	if (session.get('carryoverPPP')):
-		ppp = session['carryoverPPP']
+		if (session.get('carryoverPPP')):
+			ppp = session['carryoverPPP']
 
-	return render_template('PPP.html',
-		catextppp=ppp, dbdata = dataplustrans, indices = indices,
-		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
+		return render_template('PPP.html',
+			catextppp=ppp, dbdata = dataplustrans, indices = indices,
+			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
+
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
 
 @app.route('/PPM') #PPM page
 def showPPM():
 
-	#PPM data has individual location columns
-	ppmCur = mysql.connection.cursor()
-	ppmQuery = "SELECT id, description, image_path FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
-	loc = []
-	if (session.get('region')):
-		loc.append(toRoman(session['region']))
-	else:
-		loc.append("%")
-	if (session.get('insula')):
-		ins = session['insula']
-		if session['insula'][0] == "0":
-			ins = session['insula'].replace("0","")
-		loc.append(ins)
-	else:
-		loc.append("%")
-	if (session.get('property')):
-		prop = session['property'] 
-		if session['property'][0] == "0":
-			prop = session['property'].replace("0","")
-		loc.append(prop)
-	else:
-		loc.append("%")
-	if (session.get('room')):
-		room = session['room'] 
-		if session['room'][0] == "0":
-			room = session['room'].replace("0","")
-		loc.append(room)
-	else:
-		loc.append("%")
+	if session["logged_in"]:
 
-	ppmCur.execute(ppmQuery, loc)
-	data = ppmCur.fetchall()
+		#PPM data has individual location columns
+		ppmCur = mysql.connection.cursor()
+		ppmQuery = "SELECT id, description, image_path FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
+		loc = []
+		if (session.get('region')):
+			loc.append(toRoman(session['region']))
+		else:
+			loc.append("%")
+		if (session.get('insula')):
+			ins = session['insula']
+			if session['insula'][0] == "0":
+				ins = session['insula'].replace("0","")
+			loc.append(ins)
+		else:
+			loc.append("%")
+		if (session.get('property')):
+			prop = session['property'] 
+			if session['property'][0] == "0":
+				prop = session['property'].replace("0","")
+			loc.append(prop)
+		else:
+			loc.append("%")
+		if (session.get('room')):
+			room = session['room'] 
+			if session['room'][0] == "0":
+				room = session['room'].replace("0","")
+			loc.append(room)
+		else:
+			loc.append("%")
 
-	dataplustrans, indices = dataTranslate(data)
+		ppmCur.execute(ppmQuery, loc)
+		data = ppmCur.fetchall()
 
-	imgs = []
-	for d in data:
-		itemid = "0"
-		print(d[2])
-		searchid = "\"" + d[2] + "\""
-		box_id = box_client.search().query(query=searchid, file_extensions=['jpg'], ancestor_folder_ids="97077887697,87326350215", fields=["id", "name"], content_types=["name"])
-		for item in box_id:
-			if item.name == d[2]:
-				itemid = item.id
-				imgs.append(itemid)
-				print(itemid)
-				break
-		try:
-			thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
-		except boxsdk.BoxAPIException as exception:
-			thumbnail = bytes(exception.message, 'utf-8')
-		filename = str(itemid) + ".jpg"
-		if not os.path.exists("static/images/"+filename):
-			with open(os.path.join("static/images",filename), "wb") as f:
-				f.write(thumbnail)
-	for x in range(len(dataplustrans)):
-		j = dataplustrans[x]
-		j.insert(1, imgs[x])
-		imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
-		ppmCur.execute(imgQuery, [imgs[x], j[0]])
-		mysql.connection.commit()
+		dataplustrans, indices = dataTranslate(data)
+
+		imgs = []
+		for d in data:
+			itemid = "0"
+			print(d[2])
+			searchid = "\"" + d[2] + "\""
+			box_id = box_client.search().query(query=searchid, file_extensions=['jpg'], ancestor_folder_ids="97077887697,87326350215", fields=["id", "name"], content_types=["name"])
+			for item in box_id:
+				if item.name == d[2]:
+					itemid = item.id
+					imgs.append(itemid)
+					print(itemid)
+					break
+			try:
+				thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
+			except boxsdk.BoxAPIException as exception:
+				thumbnail = bytes(exception.message, 'utf-8')
+			filename = str(itemid) + ".jpg"
+			if not os.path.exists("static/images/"+filename):
+				with open(os.path.join("static/images",filename), "wb") as f:
+					f.write(thumbnail)
+		for x in range(len(dataplustrans)):
+			j = dataplustrans[x]
+			j.insert(1, imgs[x])
+			imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
+			ppmCur.execute(imgQuery, [imgs[x], j[0]])
+			mysql.connection.commit()
+		
+		ppmCur.close()
+
+		ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
+
+		#each region (theoretically) has its own PDF doc
+		if (session.get('region')):
+			reg = session['region']
+			if session['region'] == "1":
+				iframeurl = ""
+			if session['region'] == "2":
+				iframeurl = ""
+			if session['region'] == "3":
+				iframeurl = ""
+			if session['region'] == "4":
+				iframeurl = ""
+			if session['region'] == "5":
+				iframeurl = ""
+			if session['region'] == "6":
+				iframeurl = ""
+			if session['region'] == "7":
+				iframeurl = ""
+			if session['region'] == "8":
+				iframeurl = ""
+			if session['region'] == "9":
+				iframeurl = ""
+		if (session.get('insula')):
+			ins = session['insula']
+		if (session.get('property')):
+			prop = session['property']
+		if (session.get('room')):
+			room = session['room']
+
+		if (session.get('carryoverPPM')):
+			ppm = session['carryoverPPM']
+		if (session.get('carryoverPPMImgs')):
+			ppmimg = session['carryoverPPMImgs']
+
+		return render_template('PPM.html',
+			catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, indices = indices,
+			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
 	
-	ppmCur.close()
-
-	ppm = ppmimg = reg = ins = prop = room = iframeurl = ""
-
-	#each region (theoretically) has its own PDF doc
-	if (session.get('region')):
-		reg = session['region']
-		if session['region'] == "1":
-			iframeurl = ""
-		if session['region'] == "2":
-			iframeurl = ""
-		if session['region'] == "3":
-			iframeurl = ""
-		if session['region'] == "4":
-			iframeurl = ""
-		if session['region'] == "5":
-			iframeurl = ""
-		if session['region'] == "6":
-			iframeurl = ""
-		if session['region'] == "7":
-			iframeurl = ""
-		if session['region'] == "8":
-			iframeurl = ""
-		if session['region'] == "9":
-			iframeurl = ""
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
-
-	if (session.get('carryoverPPM')):
-		ppm = session['carryoverPPM']
-	if (session.get('carryoverPPMImgs')):
-		ppmimg = session['carryoverPPMImgs']
-
-	return render_template('PPM.html',
-		catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, indices = indices,
-		region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
 
 # When items are marked as reviewed, update database
 @app.route('/ppm-reviewed') 
@@ -350,67 +361,72 @@ def updatePPM():
 
 @app.route('/PinP') #PinP page
 def showPinP():
-	pinp = reg = ins = prop = room = ""
+	if session["logged_in"]:
 
-	pinpCur = mysql.connection.cursor()
+		pinp = reg = ins = prop = room = ""
 
-	#Join tbl_webpage_images and tbl_box_images on id
-	pinpQuery = "SELECT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
+		pinpCur = mysql.connection.cursor()
 
-	loc = []
-	if (session.get('region')):
-		loc.append(toRoman(session['region']))
+		#Join tbl_webpage_images and tbl_box_images on id
+		pinpQuery = "SELECT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
+
+		loc = []
+		if (session.get('region')):
+			loc.append(toRoman(session['region']))
+		else:
+			loc.append("%")
+		if (session.get('insula')):
+			ins = session['insula']
+			if session['insula'][0] == "0":
+				ins = session['insula'].replace("0","")
+			loc.append(ins)
+		else:
+			loc.append("%")
+		if (session.get('property')):
+			prop = session['property'] 
+			if session['property'][0] == "0":
+				prop = session['property'].replace("0","")
+			loc.append(prop)
+		else:
+			loc.append("%")
+
+		pinpCur.execute(pinpQuery, loc)
+
+		data = pinpCur.fetchall()
+		pinpCur.close()
+
+		indices = []
+		thumbnails = {}
+		for d in data:
+			indices.append(d[1])
+			try:
+				thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg', min_width=200)
+			except boxsdk.BoxAPIException as exception:
+				thumbnail = exception.message
+			filename = str(d[1]) + ".jpg"
+			if not os.path.exists("static/images/"+filename):
+				with open(os.path.join("static/images",filename), "wb") as f:
+					f.write(thumbnail)
+
+		if (session.get('region')):
+			reg = session['region']
+		if (session.get('insula')):
+			ins = session['insula']
+		if (session.get('property')):
+			prop = session['property']
+		if (session.get('room')):
+			room = session['room']
+
+		if (session.get('carryoverPinP')):
+			pinp = session['carryoverPinP']
+
+		return render_template('PinP.html',
+			catextpinp=pinp, dbdata = data, indices = indices, thumbnails = thumbnails,
+			region=reg, insula=ins, property=prop, room=room)
 	else:
-		loc.append("%")
-	if (session.get('insula')):
-		ins = session['insula']
-		if session['insula'][0] == "0":
-			ins = session['insula'].replace("0","")
-		loc.append(ins)
-	else:
-		loc.append("%")
-	if (session.get('property')):
-		prop = session['property'] 
-		if session['property'][0] == "0":
-			prop = session['property'].replace("0","")
-		loc.append(prop)
-	else:
-		loc.append("%")
-
-	pinpCur.execute(pinpQuery, loc)
-
-	data = pinpCur.fetchall()
-	pinpCur.close()
-
-	indices = []
-	thumbnails = {}
-	for d in data:
-		indices.append(d[1])
-		try:
-			thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg', min_width=200)
-		except boxsdk.BoxAPIException as exception:
-			thumbnail = exception.message
-		filename = str(d[1]) + ".jpg"
-		if not os.path.exists("static/images/"+filename):
-			with open(os.path.join("static/images",filename), "wb") as f:
-				f.write(thumbnail)
-
-	if (session.get('region')):
-		reg = session['region']
-	if (session.get('insula')):
-		ins = session['insula']
-	if (session.get('property')):
-		prop = session['property']
-	if (session.get('room')):
-		room = session['room']
-
-	if (session.get('carryoverPinP')):
-		pinp = session['carryoverPinP']
-
-	return render_template('PinP.html',
-		catextpinp=pinp, dbdata = data, indices = indices, thumbnails = thumbnails,
-		region=reg, insula=ins, property=prop, room=room)
-
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+	
 @app.route('/help') #Help page - the info here is in the HTML
 def help():
 	reg = ins = prop = room = ""
