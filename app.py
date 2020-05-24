@@ -1,5 +1,5 @@
 from __future__ import print_function
-from flask import Flask, render_template, session, json, request, redirect
+from flask import Flask, render_template, session, json, request, redirect, flash
 from flask_mysqldb import MySQL
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
@@ -81,6 +81,18 @@ def index():
 		arc = session['arc']
 
 	return render_template('index.html', arc=arc, error="")
+
+@app.route("/login", methods=['POST']) # Login form
+def login():
+	with open('user.cfg', 'r') as user_cfg:
+		user_lines = user_cfg.read().splitlines()
+		username = user_lines[0]
+		password = user_lines[1]
+	if request.form['password'] == password and request.form['username'] == username:
+		session['logged_in'] = True
+	else:
+		flash('Sorry, wrong password!')
+	return home()
 
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():
@@ -500,35 +512,6 @@ def showCarryover():
 	return render_template('imgs.html',
 		pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
 		region=reg, insula=ins, property=prop, room=room)
-
-# @app.route('/carryover', methods=['POST']) #Carryover form found on multiple pages
-# # Deprecated?
-# def carryover_text():
-# 	if (request.form.get('catextppp')):
-# 		if (session.get('carryoverPPP')):
-# 			session['carryoverPPP'] += "; " + request.form['catextppp']
-# 		else:
-# 			session['carryoverPPP'] = request.form['catextppp']
-
-# 	if (request.form.get('catextppm')):
-# 		if (session.get('carryoverPPM')):
-# 			session['carryoverPPM'] += "; " + request.form['catextppm']
-# 		else:
-# 			session['carryoverPPM'] = request.form['catextppm']
-
-# 	if (request.form.get('catextppmimg')):
-# 		if (session.get('carryoverPPMImgs')):
-# 			session['carryoverPPMImgs'] += "; " + request.form['catextppmimg']
-# 		else:
-# 			session['carryoverPPMImgs'] = request.form['catextppmimg']
-
-# 	if (request.form.get('catextpinp')):
-# 		if (session.get('carryoverPinP')):
-# 			session['carryoverPinP'] += "; " + request.form['catextpinp']
-# 		else:
-# 			session['carryoverPinP'] = request.form['catextpinp']
-
-# 	return redirect(request.referrer)
 
 @app.route('/carryover-button') #Carryover button found on multiple pages
 def carryover_button():
