@@ -31,5 +31,5 @@ Users start by entering an ARC number, which queries the various databases based
 
 ## File Structure
 - templates/ - HTML files that take in Flask output and display the site
-- app.py - main Flask Python file
+- app.py - main Flask Python file; [further documentation](https://htmlpreview.github.io/?https://github.com/alexroseb/PALP-Workspace/blob/master/static/docs.html)
 - static/css/style.css - Basic styling
