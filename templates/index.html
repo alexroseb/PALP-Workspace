@@ -48,10 +48,12 @@
             <h2> Welcome to the PALP Workspace! </h2>
         </div>
         <div class="row">
-            <p><strong>Please enter what you're working on:</strong></p>
-        </div>
-        <div class="row">
             <p style="color:red; font-size: 1.875em;">{{error}}</p>
+        </div>
+
+        {% if session['logged_in'] %}
+        <div class="row">
+            <p><strong>Please enter what you're working on:</strong></p>
         </div>
         <div class="row">
             <form action="/init" method="POST">
@@ -64,6 +66,24 @@
         <div class="row">
             <br/><a href="/cleardata" class="btn btn-outline-danger">Clear Data and Change ARC</a>
         </div>
+        <div class="row">
+            <p>Before getting started, make sure you are logged into <a href="https://accounts.google.com/login" target="_blank">Google</a> and <a href="https://app.box.com/login" target="_blank">Box</a>.</p>
+        </div>
+
+        {% else %}
+        <div class="row">
+            <form action="/login" method="POST">
+                <label for="username"> Username </label>
+                <input class="form-control" name="username" id="username" required>
+                <br/>
+                <label for="password"> Password </label>
+                <input class="form-control" name="password" id="password" required>
+                <br/>
+                <input type="submit" class="btn btn-primary" value="Log in">
+            </form>
+        </div>
+
+        {% endif %}
     </div>
 </body>
  
