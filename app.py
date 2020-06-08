@@ -138,7 +138,7 @@ def showPPP():
 	if session.get('logged_in') and session["logged_in"]:
 		# PPP ids are a combination of location data
 		pppCur = mysql.connection.cursor()
-		pppQuery = "SELECT id, description FROM PPP WHERE id LIKE %s;"
+		pppQuery = "SELECT id, description, material FROM PPP WHERE id LIKE %s;"
 		loc = ""
 		if (session.get('region')):
 			loc += session['region']
