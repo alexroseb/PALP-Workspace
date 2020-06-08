@@ -107,7 +107,7 @@
     <script type="text/javascript">
         $("#edit").click(function(){
             $("#data-table").replaceWith(function(){
-                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">ID</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[0]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location</th><th scope="col">Location details</th><th scope="col">Material</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<td><textarea id="{{row[0]}}_a" class="form-control" name="{{row[0]}}_a">{{row[2]}}</textarea></td><td><textarea id="{{row[0]}}_b" class="form-control" name="{{row[0]}}_b">{{row[3]}}</textarea></td><td><textarea id="{{row[0]}}_c" class="form-control" name="{{row[0]}}_c">{{row[4]}}</textarea></td><td><textarea id="{{row[0]}}_d" class="form-control" name="{{row[0]}}_d">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
         });
         $("#copy").click(function(){

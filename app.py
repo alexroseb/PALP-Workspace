@@ -339,9 +339,20 @@ def pppReviewed():
 def updatePPP():
 	pppCur = mysql.connection.cursor()
 	dictargs = request.form.to_dict()
-	for k in dictargs:
-		pppQuery = "UPDATE PPP SET `description` = '" + dictargs[k] + "' WHERE id = " + k + ";"
-		pppCur.execute(pppQuery)
+	for k, v in dictargs.items():
+		sep = k.split("_")
+		if sep[1] == "a":
+			pppQuery = "UPDATE PPP SET `id` = '" + v + "' WHERE uuid = " + sep[0] + ";"
+			pppCur.execute(pppQuery)
+		if sep[1] == "b":
+			pppQuery = "UPDATE PPP SET `location` = '" + v + "' WHERE uuid = " + sep[0] + ";"
+			pppCur.execute(pppQuery)
+		if sep[1] == "c":
+			pppQuery = "UPDATE PPP SET `material` = '" + v + "' WHERE uuid = " + sep[0] + ";"
+			pppCur.execute(pppQuery)
+		if sep[1] == "d":
+			pppQuery = "UPDATE PPP SET `description` = '" + v + "' WHERE uuid = " + sep[0] + ";"
+			pppCur.execute(pppQuery)
 	mysql.connection.commit()
 	pppCur.close()
 
