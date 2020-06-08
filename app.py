@@ -138,7 +138,7 @@ def showPPP():
 	if session.get('logged_in') and session["logged_in"]:
 		# PPP ids are a combination of location data
 		pppCur = mysql.connection.cursor()
-		pppQuery = "SELECT id, description, material FROM PPP WHERE id LIKE %s;"
+		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE id LIKE %s;"
 		loc = ""
 		if (session.get('region')):
 			loc += session['region']
@@ -327,7 +327,7 @@ def ppmReviewed():
 def pppReviewed():
 	strargs = request.args['data'].replace("[", "").replace("]", "")
 	pppCur = mysql.connection.cursor()
-	pppQuery = "UPDATE PPP SET reviewed=1 WHERE id in (" + strargs + ") ;"
+	pppQuery = "UPDATE PPP SET reviewed=1 WHERE uuid in (" + strargs + ") ;"
 	pppCur.execute(pppQuery)
 	mysql.connection.commit()
 	pppCur.close()
@@ -514,7 +514,7 @@ def showCarryover():
 		if (session.get('carryoverPPPids')):
 			carryCur = mysql.connection.cursor()
 			inn = ', '.join(session['carryoverPPPids'])
-			carryQuery = "SELECT id, description FROM PPP WHERE id in (" + inn +") ;"
+			carryQuery = "SELECT id, description FROM PPP WHERE uuid in (" + inn +") ;"
 			carryCur.execute(carryQuery)
 			dataList = carryCur.fetchall()
 			carryCur.close()
@@ -550,7 +550,7 @@ def carryover_button():
 		else:
 			session['carryoverPPPids'] = strargs.split(",")
 		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT description, reviewed FROM PPP WHERE id in (" + strargs + ") ;"
+		carryQuery = "SELECT description, reviewed FROM PPP WHERE uuid in (" + strargs + ") ;"
 		carryCur.execute(carryQuery)
 		dataList = carryCur.fetchall()
 		carryCur.close()

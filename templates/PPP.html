@@ -66,18 +66,19 @@
                         <thead>
                             <tr>
                                 <th scope="col">Location</th>
+                                <th scope="col">Material</th>
                                 <th scope="col">Italian</th>
                                 <th scope="col">English</th>
-                                <th scope="col">Material</th>
                                 <th scope="col">Select</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for row in dbdata %}
                                 <tr>
-                                    {% for col in row %}
-                                        <td>{{col}}</td>
-                                    {% endfor %}
+                                        <td>{{row[2]}}, {{row[3]}}</td>
+                                        <td>{{row[4]}}</td>
+                                        <td>{{row[1]}}</td>
+                                        <td>{{row[5]}}</td>
                                     <td> 
                                         <form>
                                             <input type="checkbox" class="form-control" name="{{row[0]}}" id="{{row[0]}}" >
