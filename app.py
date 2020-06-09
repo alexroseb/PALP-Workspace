@@ -206,7 +206,7 @@ def showPPM():
 
 		#PPM data has individual location columns
 		ppmCur = mysql.connection.cursor()
-		ppmQuery = "SELECT id, description, image_path, region, insula, doorway, room FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s;"
+		ppmQuery = "SELECT id, description, image_path, region, insula, doorway, room FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s ORDER BY `description` ASC;"
 		loc = []
 		if (session.get('region')):
 			loc.append(toRoman(session['region']))
