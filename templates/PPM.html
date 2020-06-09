@@ -65,7 +65,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th scope="col">ID</th>
+                                <th scope="col">Location</th>
                                 <th scope="col">Image</th>
                                 <th scope="col">Italian</th>
                                 <th scope="col">English</th>
@@ -75,12 +75,12 @@
                         <tbody>
                             {% for row in dbdata %}
                                 <tr>
-                                    <td>{{row[0]}}</td>
-                                    <td><a href="https://app.box.com/file/{{row[1]}}" class="d-block mb-4 h-100" target="_blank">
+                                    <td>{{row[4]}} {{row[5]}} {{row[6]}} {{row[7]}}</td>
+                                    <td width="30%"><a href="https://app.box.com/file/{{row[1]}}" class="d-block mb-4 h-100" target="_blank">
                                         <img class="img-fluid img-thumbnail" src="static/images/{{row[1]}}.jpg" alt="">
                                     </a></td>
                                     <td>{{row[2]}}</td>
-                                    <td>{{row[4]}}</td>
+                                    <td>{{row[8]}}</td>
                                     <td> 
                                         <form>
                                             <input type="checkbox" class="form-control" name="{{row[0]}}" id="{{row[0]}}" >
@@ -108,7 +108,7 @@
     <script type="text/javascript">
         $("#edit").click(function(){
             $("#data-table").replaceWith(function(){
-                return '<div class="col" id="data-edit-table"><form action="/update-ppm" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">ID</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[0]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+                return '<div class="col" id="data-edit-table"><form action="/update-ppm" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[4]}} {{row[5]}} {{row[6]}} {{row[7]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[2]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
         });
         $("#copy").click(function(){

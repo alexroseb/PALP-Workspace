@@ -75,7 +75,7 @@
                         <tbody>
                             {% for row in dbdata %}
                                 <tr>
-                                        <td>{{row[2]}}, {{row[3]}}</td>
+                                        <td>{{row[2][0:1]}} {{row[2][1:3]}} {{row[2][3:5]}} {{row[2][5:7]}} {{row[2][7:]}}, {{row[3]}}</td>
                                         <td>{{row[4]}}</td>
                                         <td>{{row[1]}}</td>
                                         <td>{{row[5]}}</td>
@@ -107,7 +107,7 @@
     <script type="text/javascript">
         $("#edit").click(function(){
             $("#data-table").replaceWith(function(){
-                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location</th><th scope="col">Location details</th><th scope="col">Material</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<td><textarea id="{{row[0]}}_a" class="form-control" name="{{row[0]}}_a">{{row[2]}}</textarea></td><td><textarea id="{{row[0]}}_b" class="form-control" name="{{row[0]}}_b">{{row[3]}}</textarea></td><td><textarea id="{{row[0]}}_c" class="form-control" name="{{row[0]}}_c">{{row[4]}}</textarea></td><td><textarea id="{{row[0]}}_d" class="form-control" name="{{row[0]}}_d">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location ID<!--<br/><span style="color:red;">DO NOT EDIT <br/>unless absolutely necessary</span>--></th><th scope="col">Location details</th><th scope="col">Material</th><th scope="col" width="50%">Italian</th></tr></thead><tbody>{% for row in dbdata %}<td><!--<textarea id="{{row[0]}}_a" class="form-control" name="{{row[0]}}_a"> </textarea>-->{{row[2][0:1]}} {{row[2][1:3]}} {{row[2][3:5]}} {{row[2][5:7]}} {{row[2][7:]}}</td><td><textarea id="{{row[0]}}_b" class="form-control" name="{{row[0]}}_b">{{row[3]}}</textarea></td><td><textarea id="{{row[0]}}_c" class="form-control" name="{{row[0]}}_c">{{row[4]}}</textarea></td><td><textarea id="{{row[0]}}_d" class="form-control" name="{{row[0]}}_d">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
         });
         $("#copy").click(function(){
