@@ -340,22 +340,23 @@ def updatePPP():
 	pppCur = mysql.connection.cursor()
 	dictargs = request.form.to_dict()
 	for k, v in dictargs.items():
+		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
 		sep = k.split("_")
 		print(sep[0])
 		pppQuery = "INSERT INTO PPP(`uuid`) SELECT * FROM ( SELECT '" + sep[0] + "' ) AS tmp WHERE NOT EXISTS ( SELECT 1 FROM PPP WHERE `uuid` = '" + sep[0] + "' ) LIMIT 1;"
 		pppCur.execute(pppQuery)
 		mysql.connection.commit()
 		if sep[1] == "a":
-			pppQueryA = "UPDATE PPP SET `id` = '" + v + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppQueryA = "UPDATE PPP SET `id` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryA)
 		if sep[1] == "b":
-			pppQueryB = "UPDATE PPP SET `location` = '" + v + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppQueryB = "UPDATE PPP SET `location` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryB)
 		if sep[1] == "c":
-			pppQueryC = "UPDATE PPP SET `material` = '" + v + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppQueryC = "UPDATE PPP SET `material` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryC)
 		if sep[1] == "d":
-			pppQueryD = "UPDATE PPP SET `description` = '" + v + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppQueryD = "UPDATE PPP SET `description` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryD)
 	mysql.connection.commit()
 	pppCur.close()
@@ -367,7 +368,9 @@ def updatePPM():
 	ppmCur = mysql.connection.cursor()
 	dictargs = request.form.to_dict()
 	for k in dictargs:
-		ppmQuery = "UPDATE PPM SET `description` = '" + dictargs[k] + "' WHERE id = " + k + ";"
+		krem =  dictargs[k].replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+		ppmQuery = "UPDATE PPM SET `description` = '" + krem + "' WHERE id = " + k + ";"
+		print(ppmQuery)
 		ppmCur.execute(ppmQuery)
 	mysql.connection.commit()
 	ppmCur.close()
