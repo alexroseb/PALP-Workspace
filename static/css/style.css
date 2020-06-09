@@ -17,3 +17,8 @@
 .desctext{
     min-height: 5em;
 }
+.container{
+    max-width: none;
+    padding-left: 5%;
+    padding-right: 5%;
+}
