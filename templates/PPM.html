@@ -108,7 +108,7 @@
     <script type="text/javascript">
         $("#edit").click(function(){
             $("#data-table").replaceWith(function(){
-                return '<div class="col" id="data-edit-table"><form action="/update-ppm" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[4]}} {{row[5]}} {{row[6]}} {{row[7]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[2] | replace("\n", " ")}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+                return '<div class="col" id="data-edit-table"><form action="/update-ppm" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location</th><th scope="col">Italian</th></tr></thead><tbody>{% for row in dbdata %}<tr><td>{{row[4]}} {{row[5]}} {{row[6]}} {{row[7]}}</td><td><textarea id="{{row[0]}}" class="form-control" name="{{row[0]}}">{{row[2] | replace("\n", " ") | replace("\r", " ")}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
         });
         $("#copy").click(function(){

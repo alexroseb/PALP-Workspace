@@ -107,7 +107,22 @@
     <script type="text/javascript">
         $("#edit").click(function(){
             $("#data-table").replaceWith(function(){
-                return '<div class="col" id="data-edit-table"><form action="/update-ppp" method="POST"><table class="table table-bordered" ><thead><tr><th scope="col">Location ID<!--<br/><span style="color:red;">DO NOT EDIT <br/>unless absolutely necessary</span>--></th><th scope="col">Location details</th><th scope="col">Material</th><th scope="col" width="50%">Italian</th></tr></thead><tbody>{% for row in dbdata %}<td><!--<textarea id="{{row[0]}}_a" class="form-control" name="{{row[0]}}_a"> </textarea>-->{{row[2][0:1]}} {{row[2][1:3]}} {{row[2][3:5]}} {{row[2][5:7]}} {{row[2][7:]}}</td><td><textarea id="{{row[0]}}_b" class="form-control" name="{{row[0]}}_b">{{row[3]}}</textarea></td><td><textarea id="{{row[0]}}_c" class="form-control" name="{{row[0]}}_c">{{row[4]}}</textarea></td><td><textarea id="{{row[0]}}_d" class="form-control" name="{{row[0]}}_d">{{row[1]}}</textarea></td></tr>{% endfor %}</tbody></table><input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
+                return '<div class="col" id="data-edit-table">'
+                + '<form action="/update-ppp" method="POST">'
+                + '<table class="table table-bordered" id="addable-table" ><thead><tr>'
+                + '<th scope="col">Location ID<!--<br/><span style="color:red;">DO NOT EDIT <br/>unless absolutely necessary</span>--></th>'
+                + '<th scope="col">Location details</th>'
+                + '<th scope="col">Material</th>'
+                + '<th scope="col" width="50%">Italian</th></tr></thead>'
+                + '<tbody>{% for row in dbdata %}'
+                + '<td><!--<textarea id="{{row[0]}}_a" class="form-control" name="{{row[0]}}_a"> </textarea>-->{{row[2][0:1]}} {{row[2][1:3]}} {{row[2][3:5]}} {{row[2][5:7]}} {{row[2][7:]}}</td>'
+                + '<td><textarea id="{{row[0]}}_b" class="form-control" name="{{row[0]}}_b">{{row[3] | replace("\n", " ") | replace("\r", " ")}}</textarea></td>'
+                + '<td><textarea id="{{row[0]}}_c" class="form-control" name="{{row[0]}}_c">{{row[4] | replace("\n", " ") | replace("\r", " ")}}</textarea></td>'
+                + '<td><textarea id="{{row[0]}}_d" class="form-control" name="{{row[0]}}_d">{{row[1] | replace("\n", " ") | replace("\r", " ")}}</textarea></td>'
+                + '</tr>{% endfor %}'
+                + '<tr><td colspan=4><button class="btn btn-outline-primary" onclick="addElement();" type="button">Add new entry </button></td></tr>'
+                + '</tbody></table>'
+                + '<input type="submit" class="btn btn-outline-success" value="Submit changes"></form></div>';
             });
         });
         $("#copy").click(function(){
@@ -119,6 +134,20 @@
             });
             window.location = "/carryover-button?catextppp=" + i;
         });
+        function addElement(){
+            var id = 'new' + Math.random().toString().substr(2, 9);
+            console.log(id);
+            var table = document.getElementById("addable-table");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            cell1.innerHTML = '<td><textarea id="' + id + '_a" class="form-control" name="' + id + '_a">{{region}}{{insula}}{{property}}{{room}}</textarea></td>';
+            cell2.innerHTML = '<td><textarea id="' + id + '_b" class="form-control" name="' + id + '_b"></textarea></td>';
+            cell3.innerHTML = '<td><textarea id="' + id + '_c" class="form-control" name="' + id + '_c"></textarea></td>';
+            cell4.innerHTML = '<td><textarea id="' + id + '_d" class="form-control" name="' + id + '_d"></textarea></td>';
+        }
     </script>
 </body>
  
