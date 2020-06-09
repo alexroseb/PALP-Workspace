@@ -70,6 +70,7 @@
                         <th scope="col">ID</th>
                         <th scope="col">Image</th>
                         <th scope="col">Description</th>
+                        <th scope="col">Already Used</th>
                         <th scope="col">Select</th>
                     </tr>
                 </thead>
@@ -79,6 +80,7 @@
                             <td> {{row[0]}} </td>
                             <td> <a href="https://app.box.com/file/{{row[1]}}"><img class="img-fluid img-thumbnail" src="static/images/{{row[1]}}.jpg" target="_blank" alt=""></a> </td>
                             <td>{{row[2]}}</td>
+                            <td>{{"Yes" if row[3] else "No"}}</td>
                             <td> 
                                 <form>
                                     <input type="checkbox" class="form-control" name="{{row[1]}}" id="{{row[1]}}" >
