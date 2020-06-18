@@ -130,6 +130,23 @@ def init():
 	else:
 		return render_template('index.html', arc=arc, error="I'm sorry, that's an invalid ARC. Please try again.")
 
+	done_ws = "1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ"
+	donesheet = sheet.values().get(spreadsheetId=done_ws, range="Sheet1", majorDimension="COLUMNS").execute()
+	donevalues = donesheet.get('values', [])
+	donelist = donevalues[2]
+	if arc in donelist:
+		arcind = donelist.index(arc)
+		arcrange = str(arcind) + ":" + str(arcind)
+		arcsheet = sheet.values().get(spreadsheetId=done_ws, range=arcrange).execute()
+		arcvalues = arcsheet.get('values', [])
+
+		session['carryoverPPP'] = arcvalues[0][7]
+		session['carryoverPPM'] = arcvalues[0][9]
+		session['carryoverPinP'] = arcvalues[0][11]
+		session['carryoverPPPids'] = arcvalues[0][6].split(",")
+		session['carryoverPPMids'] = arcvalues[0][8].split(",")
+		session['carryoverPPMImgsids'] = arcvalues[0][10].split(",")
+
 	return redirect('/PPP')
 
 @app.route("/PPP") # PPP page
@@ -667,24 +684,22 @@ def saveData():
 		else:
 			queryvars.append("")
 
-		# if (session.get('carryoverPPPids')):
-		# 	queryvars.append(str(session['carryoverPPPids']))
-		# else:
-		# 	queryvars.append("")
+		if (session.get('carryoverPPPids')):
+			queryvars.append(str(session['carryoverPPPids']))
+		else:
+			queryvars.append("")
 	#Add in PPP italian, placeholder for now
-		queryvars.append("")
 
 		if (session.get('carryoverPPP')):
 			queryvars.append(str(session['carryoverPPP']))
 		else:
 			queryvars.append("")
 
-		# if (session.get('carryoverPPMids')):
-		# 	queryvars.append(str(session['carryoverPPMids']))
-		# else:
-		# 	queryvars.append("")
+		if (session.get('carryoverPPMids')):
+			queryvars.append(str(session['carryoverPPMids']))
+		else:
+			queryvars.append("")
 	#Add in PPM italian, placeholder for now
-		queryvars.append("")
 
 		if (session.get('carryoverPPM')):
 			queryvars.append(str(session['carryoverPPM']))
@@ -700,16 +715,30 @@ def saveData():
 			queryvars.append(str(session['carryoverPinP']))
 		else:
 			queryvars.append("")
+		if (session.get('gdoc')):
+			queryvars.append(str(session['gdoc']))
+		else:
+			queryvars.append("")
 
 		values = [queryvars]
 		print(values)
 		body = {
 		    'values': values
 		}
+		ranges = "Sheet1"
 
-		result = sheets_client.spreadsheets().values().append(spreadsheetId="1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ",range="Sheet1", valueInputOption="USER_ENTERED", insertDataOption="INSERT_ROWS", body=body).execute()
+		sheet = sheets_client.spreadsheets()
+		done_ws = "1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ"
+		donesheet = sheet.values().get(spreadsheetId=done_ws, range="Sheet1", majorDimension="COLUMNS").execute()
+		donevalues = donesheet.get('values', [])
+		donelist = donevalues[2]
+		if session['arc'] in donelist:
+			arcind = donelist.index(session['arc'])
+			ranges = str(arcind) + ":" + str(arcind)
 
-		return redirect(request.referrer)
+		result = sheet.values().append(spreadsheetId="1HaKXGdS-ZS42HiK8d1KeeSdC199MdxyP42QqsUlzZBQ",range=ranges, valueInputOption="USER_ENTERED", insertDataOption="OVERWRITE", body=body).execute()
+
+		return redirect("/descriptions")
 	else:
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
