@@ -56,68 +56,54 @@
                 </ul>
             </nav>
         </div>
-<!--         <div class="row">
-            <p> Go to your workspace on Google Sheets and copy the sharable URL. Paste it here then press "Submit".</p>
-            <label for="inputDescURL" class="sr-only">Google Sheet URL</label>
-            <input type="url" name="inputDescURL" id="inputDescURL" size="50" placeholder="Google Sheet URL" />
-            <button onclick="loadIframe()" class="button">Submit </button>
-        </div> -->
         <div class="row">
-            <div class="col-3" style="word-wrap: break-word;">
-                <p> Caution: Descriptions are editable. See <a href="/help"> help page. </a></p>
-                <div class="accordion" id="accordionExample">
-                    <div class="card">
-                        <div class="card-header" id="headingOne">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> PPP </button>
-                            </h2>
-                        </div>
-                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                            <div class="card-body">
-                                <textarea class="form-control desctext">{{ carryoverPPP }}</textarea>
-                            </div>
-                        </div>
+                <iframe id="iFrameDesc" width="100%" height="600" src={{ gdoc }}></iframe>
+        </div>
+        <div class="row">
+            <p>Descriptions are editable, but changes will not be saved.</p>
+        </div>
+        <div class="row" style="word-wrap: break-word;">
+            <div class="accordion" id="accordionExample" style="width: 100%;">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> PPP </button>
+                        </h2>
                     </div>
-                    <div class="card">
-                        <div class="card-header" id="headingTwo">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> PPM </button>
-                            </h2>
-                        </div>
-                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                            <div class="card-body">
-                                <textarea class="form-control desctext">{{ carryoverPPM }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header" id="headingThree">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Image(s) used: PinP </button>
-                            </h2>
-                        </div>
-                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                            <div class="card-body">
-                                <textarea class="form-control desctext">{{ carryoverPinP }}</textarea>
-                            </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <textarea class="form-control desctext">{{ carryoverPPP }}</textarea>
                         </div>
                     </div>
                 </div>
-<!--                 <p><strong>PPP </strong><br/>
-                <textarea class="form-control">{{ carryoverPPP }}</textarea> <br/>
-                <strong> PPM </strong> <br/>
-                <textarea class="form-control">{{ carryoverPPM }}</textarea><br/>
-                <strong> Image(s) used: PPM </strong> <br/>
-                <textarea class="form-control">{{ carryoverPPMImgs }}</textarea> <br/>
-                <strong> Image(s) used: PinP </strong> <br/>
-                <textarea class="form-control">{{ carryoverPinP }}</textarea> <br/> -->
-                <br/>
-                <a href="/cleardata" class="btn btn-outline-primary" style="text-align: center;">Done! <br/> Clear Data and Change ARC</a>
-                </p>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> PPM </button>
+                        </h2>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <textarea class="form-control desctext">{{ carryoverPPM }}</textarea>
+                        </div>
+                    </div>
+                </div>
+<!--                 <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Image(s) used: PinP </button>
+                        </h2>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <textarea class="form-control desctext">{{ carryoverPinP }}</textarea>
+                        </div>
+                    </div>
+                </div> -->
             </div>
-            <div class="col">
-                <iframe id="iFrameDesc" width="100%" height="600" src={{ gdoc }}></iframe>
-            </div>
+        </div>
+        <div class="row">
+            <a href="/cleardata" class="btn btn-outline-primary" style="text-align: center;">Done! <br/> Clear Data and Change ARC</a>
         </div>
     </div>
 <!--     <script type="text/javascript">

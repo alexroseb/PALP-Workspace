@@ -611,6 +611,12 @@ def carryover_button():
 		else:
 			session['carryoverPinP'] = request.args['catextpinp']
 
+	if (request.args.get('catextppp')):
+		return redirect("/PPM")
+
+	if (request.args.get('catextppm')):
+		return redirect("/PinP")
+
 	return redirect("/data")
 
 @app.route('/cleardata') #Start over, redirects to home page
