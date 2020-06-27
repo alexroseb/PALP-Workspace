@@ -676,24 +676,20 @@ def saveData():
 		else:
 			queryvars.append("")
 
-		# if (session.get('carryoverPPPids')):
-		# 	queryvars.append(str(session['carryoverPPPids']))
-		# else:
-		# 	queryvars.append("")
-	#Add in PPP italian, placeholder for now
-		queryvars.append("")
+		if (session.get('carryoverPPPids')):
+			queryvars.append(str(session['carryoverPPPids']))
+		else:
+			queryvars.append("")
 
 		if (session.get('carryoverPPP')):
 			queryvars.append(str(session['carryoverPPP']))
 		else:
 			queryvars.append("")
 
-		# if (session.get('carryoverPPMids')):
-		# 	queryvars.append(str(session['carryoverPPMids']))
-		# else:
-		# 	queryvars.append("")
-	#Add in PPM italian, placeholder for now
-		queryvars.append("")
+		if (session.get('carryoverPPMids')):
+			queryvars.append(str(session['carryoverPPMids']))
+		else:
+			queryvars.append("")
 
 		if (session.get('carryoverPPM')):
 			queryvars.append(str(session['carryoverPPM']))
