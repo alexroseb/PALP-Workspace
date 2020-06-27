@@ -130,7 +130,7 @@ def init():
 	else:
 		return render_template('index.html', arc=arc, error="I'm sorry, that's an invalid ARC. Please try again.")
 
-	return redirect('/PPP')
+	return redirect('/PinP')
 
 @app.route("/PPP") # PPP page
 def showPPP():
@@ -615,7 +615,10 @@ def carryover_button():
 		return redirect("/PPM")
 
 	if (request.args.get('catextppm')):
-		return redirect("/PinP")
+		return redirect("/data")
+
+	if (request.args.get('catextpinp')):
+		return redirect("/PPP")
 
 	return redirect("/data")
 
