@@ -193,7 +193,7 @@ def showPPP():
 
 		return render_template('PPP.html',
 			catextppp=ppp, dbdata = dataplustrans, indices = indices,
-			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
+			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl, arc = session['arc'])
 
 	else:
 		error= "Sorry, this page is only accessible by logging in."
@@ -305,7 +305,7 @@ def showPPM():
 
 		return render_template('PPM.html',
 			catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, indices = indices,
-			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl)
+			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
@@ -440,7 +440,7 @@ def showPinP():
 
 		return render_template('PinP.html',
 			catextpinp=pinp, dbdata = data, indices = indices, thumbnails = thumbnails,
-			region=reg, insula=ins, property=prop, room=room)
+			region=reg, insula=ins, property=prop, room=room, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
@@ -459,7 +459,7 @@ def help():
 		room = session['room']
 
 	return render_template('help.html',
-		region=reg, insula=ins, property=prop, room=room)
+		region=reg, insula=ins, property=prop, room=room, arc = session['arc'])
 
 @app.route('/GIS') #Embedded GIS map
 def GIS():
@@ -475,7 +475,7 @@ def GIS():
 		room = session['room']
 
 	return render_template('GIS.html',
-		region=reg, insula=ins, property=prop, room=room)
+		region=reg, insula=ins, property=prop, room=room, arc = session['arc'])
 
 
 @app.route('/descriptions') #Copying data from workspace to Google Sheet 
@@ -507,7 +507,7 @@ def showDescs():
 
 		return render_template('descs.html',
 			carryoverPPP=ppp, carryoverPPM=ppm, carryoverPPMImgs=ppmimg, carryoverPinP=pinp,
-			region=reg, insula=ins, property=prop, room=room, gdoc=gdoc)
+			region=reg, insula=ins, property=prop, room=room, gdoc=gdoc, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
@@ -554,7 +554,7 @@ def showCarryover():
 
 		return render_template('imgs.html',
 			pppdata=ppp, ppmdata=ppm, ppming=ppmimg, pinpdata = pinp,
-			region=reg, insula=ins, property=prop, room=room)
+			region=reg, insula=ins, property=prop, room=room, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
