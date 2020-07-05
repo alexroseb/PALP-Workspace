@@ -251,12 +251,12 @@ def showPPM():
 					imgs.append(itemid)
 					print(itemid)
 					break
-			try:
-				thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
-			except boxsdk.BoxAPIException as exception:
-				thumbnail = bytes(exception.message, 'utf-8')
 			filename = str(itemid) + ".jpg"
 			if not os.path.exists("static/images/"+filename):
+				try:
+					thumbnail = box_client.file(itemid).get_thumbnail(extension='jpg', min_width=200)
+				except boxsdk.BoxAPIException as exception:
+					thumbnail = bytes(exception.message, 'utf-8')
 				with open(os.path.join("static/images",filename), "wb") as f:
 					f.write(thumbnail)
 		for x in range(len(dataplustrans)):
@@ -386,7 +386,7 @@ def showPinP():
 		pinpCur = mysql.connection.cursor()
 
 		#Join tbl_webpage_images and tbl_box_images on id
-		pinpQuery = "SELECT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
+		pinpQuery = "SELECT DISTINCT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
 
 		loc = []
 		if (session.get('region')):
@@ -414,15 +414,14 @@ def showPinP():
 		pinpCur.close()
 
 		indices = []
-		thumbnails = {}
 		for d in data:
 			indices.append(d[1])
-			try:
-				thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg', min_width=200)
-			except boxsdk.BoxAPIException as exception:
-				thumbnail = exception.message
 			filename = str(d[1]) + ".jpg"
 			if not os.path.exists("static/images/"+filename):
+				try:
+					thumbnail = box_client.file(d[1]).get_thumbnail(extension='jpg', min_width=200)
+				except boxsdk.BoxAPIException as exception:
+					thumbnail = exception.message
 				with open(os.path.join("static/images",filename), "wb") as f:
 					f.write(thumbnail)
 
@@ -439,7 +438,7 @@ def showPinP():
 			pinp = session['carryoverPinP']
 
 		return render_template('PinP.html',
-			catextpinp=pinp, dbdata = data, indices = indices, thumbnails = thumbnails,
+			catextpinp=pinp, dbdata = data, indices = indices,
 			region=reg, insula=ins, property=prop, room=room, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
