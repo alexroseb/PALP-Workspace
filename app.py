@@ -545,7 +545,7 @@ def showCarryover():
 			carryCur.close()
 			session['carryoverPPMImgs'] = []
 			for x in dataList:
-				session['carryoverPPMImgs'].append(x[2])
+				session['carryoverPPMImgs'].append('"' + str(x[2]) + '"')
 			ppm, ppminds = dataTranslate(dataList)		
 		if (session.get('carryoverPinP')):
 			pp = session['carryoverPinP'].replace(",", ";").replace("\"", "").replace(" ", "")
@@ -676,7 +676,7 @@ def saveData():
 			queryvars.append("")
 
 		if (session.get('carryoverPPPids')):
-			queryvars.append(str(session['carryoverPPPids']))
+			queryvars.append(",".join(session['carryoverPPPids']))
 		else:
 			queryvars.append("")
 
@@ -686,7 +686,7 @@ def saveData():
 			queryvars.append("")
 
 		if (session.get('carryoverPPMids')):
-			queryvars.append(str(session['carryoverPPMids']))
+			queryvars.append(",".join(session['carryoverPPMids']))
 		else:
 			queryvars.append("")
 
@@ -697,7 +697,7 @@ def saveData():
 
 
 		if (session.get('carryoverPPMImgs')):
-			queryvars.append(str(session['carryoverPPMImgs']))
+			queryvars.append(",".join(session['carryoverPPMImgs']))
 		else:
 			queryvars.append("")
 		if (session.get('carryoverPinP')):
