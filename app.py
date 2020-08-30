@@ -393,7 +393,7 @@ def showPinP():
 		pinpCur = mysql.connection.cursor()
 
 		#Join tbl_webpage_images and tbl_box_images on id
-		pinpQuery = "SELECT `archive_id`, `id_box_file`, `img_alt` FROM `PinP` WHERE `pinp_regio` LIKE %s and `pinp_insula` LIKE %s  and `pinp_entrance` LIKE %s ORDER BY `archive_id` "
+		pinpQuery = "SELECT `archive_id`, `id_box_file`, `img_alt`, `already_used` FROM `PinP` WHERE `pinp_regio` LIKE %s and `pinp_insula` LIKE %s  and `pinp_entrance` LIKE %s ORDER BY `archive_id` "
 		loc = []
 		if (session.get('region')):
 			loc.append(toRoman(session['region']))
@@ -611,6 +611,11 @@ def carryover_button():
 			session['carryoverPPM'] = dataCopy
 
 	if (request.args.get('catextpinp')):
+		pinpCur = mysql.connection.cursor()
+		pinpQuery = 'UPDATE `PinP` SET `already_used` = 1 where `id_box_file` in (' + request.args['catextpinp'] +');'
+		pinpCur.execute(pinpQuery)
+		mysql.connection.commit()
+		pinpCur.close()
 		if (session.get('carryoverPinP')):
 			session['carryoverPinP'] += "; " + request.args['catextpinp']
 		else:
