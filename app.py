@@ -206,7 +206,7 @@ def showPPM():
 
 		#PPM data has individual location columns
 		ppmCur = mysql.connection.cursor()
-		ppmQuery = "SELECT id, description, image_path, region, insula, doorway, room FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s ORDER BY `description` ASC;"
+		ppmQuery = "SELECT id, description, image_path, region, insula, doorway, room, translated_text FROM PPM WHERE region LIKE %s AND insula LIKE %s AND doorway LIKE %s AND room LIKE %s ORDER BY `description` ASC;"
 		loc = []
 		if (session.get('region')):
 			loc.append(toRoman(session['region']))
@@ -235,9 +235,16 @@ def showPPM():
 			loc.append("%")
 
 		ppmCur.execute(ppmQuery, loc)
-		data = ppmCur.fetchall()
+		dataTuple = ppmCur.fetchall()
+		data = []
 
-		dataplustrans, indices = dataTranslate(data)
+		indices = []
+		for d in dataTuple:
+			indices.append(d[0])
+			toin = []
+			for l in d:
+				toin.append(l)
+			data.append(toin)
 
 		imgs = []
 		for d in data:
@@ -248,9 +255,8 @@ def showPPM():
 			for item in box_id:
 				if item.name == d[2]:
 					itemid = item.id
-					imgs.append(itemid)
-					print(itemid)
 					break
+			imgs.append(itemid)
 			filename = str(itemid) + ".jpg"
 			if not os.path.exists("static/images/"+filename):
 				try:
@@ -259,12 +265,13 @@ def showPPM():
 					thumbnail = bytes(exception.message, 'utf-8')
 				with open(os.path.join("static/images",filename), "wb") as f:
 					f.write(thumbnail)
-		for x in range(len(dataplustrans)):
-			j = dataplustrans[x]
-			j.insert(1, imgs[x])
-			imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
-			ppmCur.execute(imgQuery, [imgs[x], j[0]])
-			mysql.connection.commit()
+		
+		for x in range(len(data)):
+			data[x].append(imgs[x])
+		 	
+		# 	imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
+		# 	ppmCur.execute(imgQuery, [imgs[x], j[0]])
+		# 	mysql.connection.commit()
 		
 		ppmCur.close()
 
@@ -304,7 +311,7 @@ def showPPM():
 			ppmimg = session['carryoverPPMImgs']
 
 		return render_template('PPM.html',
-			catextppm=ppm, catextppmimg=ppmimg, dbdata = dataplustrans, indices = indices,
+			catextppm=ppm, catextppmimg=ppmimg, dbdata = data, indices = indices,
 			region=reg, insula=ins, property=prop, room=room, iframeurl = iframeurl, arc = session['arc'])
 	else:
 		error= "Sorry, this page is only accessible by logging in."
@@ -386,8 +393,7 @@ def showPinP():
 		pinpCur = mysql.connection.cursor()
 
 		#Join tbl_webpage_images and tbl_box_images on id
-		pinpQuery = "SELECT DISTINCT `tbl_webpage_images`.`id` as id, `tbl_box_images`.`id_box_file` as box_id, `tbl_webpage_images`.`img_alt` as description FROM `tbl_webpage_images` left join `tbl_box_images` on `tbl_webpage_images`.`id` = `tbl_box_images`.`id_tbl_webpage_images` left join `tbl_addresses_x` on `tbl_webpage_images`.`id` = `tbl_addresses_x`.`wi_id` left join `tbl_addresses` on `tbl_addresses_x`.`add_id` = `tbl_addresses`.`id` where `tbl_addresses`.`pinp_regio` LIKE %s and `tbl_addresses`.`pinp_insula` LIKE %s  and `tbl_addresses`.`pinp_entrance` LIKE %s ORDER BY wi_id;"
-
+		pinpQuery = "SELECT `archive_id`, `id_box_file`, `img_alt` FROM `PinP` WHERE `pinp_regio` LIKE %s and `pinp_insula` LIKE %s  and `pinp_entrance` LIKE %s ORDER BY `archive_id` "
 		loc = []
 		if (session.get('region')):
 			loc.append(toRoman(session['region']))
@@ -630,7 +636,6 @@ def clearData():
 	session['carryoverPPPids'] = []
 	session['carryoverPPMids'] = []
 	session['carryoverPPMImgsids'] = []
-	session['carryoverPinPids'] = []
 
 	session['arc'] = ""
 	session['region'] = ""
