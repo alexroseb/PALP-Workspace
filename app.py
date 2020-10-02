@@ -269,9 +269,10 @@ def showPPM():
 		for x in range(len(data)):
 			data[x].append(imgs[x])
 		 	
-		# 	imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
-		# 	ppmCur.execute(imgQuery, [imgs[x], j[0]])
-		# 	mysql.connection.commit()
+			imgQuery = "UPDATE PPM SET image_id= %s WHERE id = %s ;"
+			print(imgQuery)
+			ppmCur.execute(imgQuery, [imgs[x], data[x][0]])
+			mysql.connection.commit()
 		
 		ppmCur.close()
 
@@ -374,11 +375,19 @@ def updatePPP():
 def updatePPM():
 	ppmCur = mysql.connection.cursor()
 	dictargs = request.form.to_dict()
+	print(dictargs)
 	for k in dictargs:
-		krem =  dictargs[k].replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
-		ppmQuery = "UPDATE PPM SET `description` = '" + krem + "' WHERE id = " + k + ";"
-		print(ppmQuery)
-		ppmCur.execute(ppmQuery)
+		splitk = k.split("-")
+		if splitk[1] == "english":
+			krem =  dictargs[k].replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+			ppmQuery = "UPDATE PPM SET `translated_text` = '" + krem + "' WHERE id = " + splitk[0] + ";" #new code
+			print(ppmQuery)
+			ppmCur.execute(ppmQuery)
+		if splitk[1] == "italian":
+			krem =  dictargs[k].replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+			ppmQuery = "UPDATE PPM SET `description` = '" + krem + "' WHERE id = " + splitk[0] + ";" #new code
+			print(ppmQuery)
+			ppmCur.execute(ppmQuery)
 	mysql.connection.commit()
 	ppmCur.close()
 
@@ -595,20 +604,17 @@ def carryover_button():
 		else:
 			session['carryoverPPMids'] = strargs.split(",")
 		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT description, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
+		carryQuery = "SELECT translated_text, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
 		carryCur.execute(carryQuery)
 		dataList = carryCur.fetchall()
 		carryCur.close()
 
-		dataCopy = ""
-		for d in dataList:
-			if d[1] == 1:
-				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+		if dataList[1] == 1:
 
-		if (session.get('carryoverPPM')):
-			session['carryoverPPM'] += "; " + dataCopy
-		else:
-			session['carryoverPPM'] = dataCopy
+			if (session.get('carryoverPPM')):
+				session['carryoverPPM'] += "; " + dataList[0]
+			else:
+				session['carryoverPPM'] = dataList[0]
 
 	if (request.args.get('catextpinp')):
 		pinpCur = mysql.connection.cursor()
