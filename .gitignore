@@ -19,3 +19,4 @@ README.txt
 tmp/
 static/images/
 .idea/
+passenger.log
