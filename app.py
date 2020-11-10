@@ -1,6 +1,7 @@
 from __future__ import print_function
 from flask import Flask, render_template, session, json, request, redirect, flash
 from flask_mysqldb import MySQL
+from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import boxsdk
@@ -132,6 +133,8 @@ def init():
 			session['ARClist'][arclist[l]] = {"link": "None", 
 											  "is_art": "Not defined",
 											  "is_plaster": "Not defined",
+											  "pinpimgs": [],
+											  "ppmimgs": [],
 											  "notes": "",
 											  "done": False,
 											  "current": False,
@@ -140,8 +143,42 @@ def init():
 				session['ARClist'][arclist[l]]["link"] = links[l]
 
 	for a,v in session['ARClist'].items():
-		pass
-		#db query: get things where ARC == a or other_arcs contains a
+		is_art = "no"
+		is_plaster = "no"
+		pinpCur = mysql.connection.cursor()
+		pinpQuery = "SELECT * FROM `PinP_preq` WHERE ARC=" + a +" OR other_ARC LIKE '%" + a + "%';"
+		pinpCur.execute(pinpQuery)
+		pinpdata = pinpCur.fetchall()
+		pinpCur.close()
+		for d in pinpdata:
+			v["pinpimgs"].append(d[0])
+			if d[1] == "maybe" and is_art == "no":
+				is_art = "maybe"
+			if d[1] == "yes" and (is_art == "no" or is_art == "maybe"):
+				is_art = "yes"
+			if d[2] == "maybe" and is_plaster == "no":
+				is_plaster = "maybe"
+			if d[2] == "yes" and (is_plaster == "no" or is_plaster == "maybe"):
+				is_plaster = "yes"
+
+		ppmCur = mysql.connection.cursor()
+		ppmQuery = "SELECT * FROM `PPM_preq` WHERE ARC=" + a +" OR other_ARC LIKE '%" + a + "%';"
+		ppmCur.execute(ppmQuery)
+		ppmdata = ppmCur.fetchall()
+		ppmCur.close()
+		for d in ppmdata:
+			v["ppmimgs"].append(d[0])
+			if d[1] == "maybe" and is_art == "no":
+				is_art = "maybe"
+			if d[1] == "yes" and (is_art == "no" or is_art == "maybe"):
+				is_art = "yes"
+			if d[2] == "maybe" and is_plaster == "no":
+				is_plaster = "maybe"
+			if d[2] == "yes" and (is_plaster == "no" or is_plaster == "maybe"):
+				is_plaster = "yes"
+
+		v["is_art"] = is_art
+		v["is_plaster"] = is_plaster
 
 	return redirect('/ARCs')
 
@@ -154,11 +191,7 @@ def chooseARCs():
 @app.route('/makedoc/<chosenarc>')
 def makedoc(chosenarc):
 	session['ARClist'][chosenarc]['current'] = True
-	arcdeets = session['ARClist'][chosenarc]
-	if arcdeets['link'].contains('http'):
-		#use this link, we're good
-		pass
-	else:
+	if 'http' not in session['ARClist'][chosenarc]['link']:
 		#make new doc 
 		pass
 	return redirect('/PPP')
@@ -174,9 +207,15 @@ def showPPP():
 		if (session.get('region')):
 			loc += session['region']
 		if (session.get('insula')):
-			loc += session['insula']
+			if len(session['insula']) < 2:
+				loc += "0" + session['insula']
+			else:
+				loc += session['insula']
 		if (session.get('property')):
-			loc += session['property']
+			if len(session['property']) < 2:
+				loc += "0" + session['property']
+			else:
+				loc += session['property']
 		if (session.get('room')):
 			loc += session['room']
 
@@ -206,6 +245,110 @@ def showPPP():
 		error= "Sorry, this page is only accessible by logging in."
 		return render_template('index.html', arc="", error=error)
 
+@app.route('/ppp-reviewed')
+def pppReviewed():
+	strargs = request.args['data'].replace("[", "").replace("]", "")
+	pppCur = mysql.connection.cursor()
+	pppQuery = "UPDATE PPP SET reviewed=1 WHERE uuid in (" + strargs + ") ;"
+	pppCur.execute(pppQuery)
+	mysql.connection.commit()
+	pppCur.close()
+
+	return redirect('/PPP')
+
+#When items are changed via update form, update database
+@app.route('/update-ppp', methods=['POST'])
+def updatePPP():
+	pppCur = mysql.connection.cursor()
+	dictargs = request.form.to_dict()
+	for k, v in dictargs.items():
+		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+		sep = k.split("_")
+		print(sep[0])
+		pppQuery = "INSERT INTO PPP(`uuid`) SELECT * FROM ( SELECT '" + sep[0] + "' ) AS tmp WHERE NOT EXISTS ( SELECT 1 FROM PPP WHERE `uuid` = '" + sep[0] + "' ) LIMIT 1;"
+		pppCur.execute(pppQuery)
+		mysql.connection.commit()
+		if sep[1] == "a":
+			pppQueryA = "UPDATE PPP SET `id` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryA)
+		if sep[1] == "b":
+			pppQueryB = "UPDATE PPP SET `location` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryB)
+		if sep[1] == "c":
+			pppQueryC = "UPDATE PPP SET `material` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryC)
+		if sep[1] == "d":
+			pppQueryD = "UPDATE PPP SET `description` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryD)
+	mysql.connection.commit()
+	pppCur.close()
+
+	return redirect('/PPP')
+
+@app.route('/carryover-button') #Carryover button found on multiple pages
+def carryover_button():
+	if (request.args.get('catextppp')):
+		strargs = request.args['catextppp'].replace("[", "").replace("]", "")
+		if (session.get('carryoverPPPids')):
+			session['carryoverPPPids'] += strargs.split(",")
+		else:
+			session['carryoverPPPids'] = strargs.split(",")
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT description, reviewed FROM PPP WHERE uuid in (" + strargs + ") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		dataCopy = ""
+		for d in dataList:
+			if d[1] == 1:
+				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+
+		if (session.get('carryoverPPP')):
+			session['carryoverPPP'] += "; " + dataCopy
+		else:
+			session['carryoverPPP'] = dataCopy
+
+	if (request.args.get('catextppm')):
+		strargs = request.args['catextppm'].replace("[", "").replace("]", "")
+		if (session.get('carryoverPPMids')):
+			session['carryoverPPMids'] += strargs.split(",")
+		else:
+			session['carryoverPPMids'] = strargs.split(",")
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT translated_text, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		if dataList[1] == 1:
+
+			if (session.get('carryoverPPM')):
+				session['carryoverPPM'] += "; " + dataList[0]
+			else:
+				session['carryoverPPM'] = dataList[0]
+
+	if (request.args.get('catextpinp')):
+		pinpCur = mysql.connection.cursor()
+		pinpQuery = 'UPDATE `PinP` SET `already_used` = 1 where `id_box_file` in (' + request.args['catextpinp'] +');'
+		pinpCur.execute(pinpQuery)
+		mysql.connection.commit()
+		pinpCur.close()
+		if (session.get('carryoverPinP')):
+			session['carryoverPinP'] += "; " + request.args['catextpinp']
+		else:
+			session['carryoverPinP'] = request.args['catextpinp']
+
+	if (request.args.get('catextppp')):
+		return redirect("/PPM")
+
+	if (request.args.get('catextppm')):
+		return redirect("/data")
+
+	if (request.args.get('catextpinp')):
+		return redirect("/PPP")
+
+	return redirect("/data")
 
 
 @app.route('/cleardata') #Start over, redirects to home page

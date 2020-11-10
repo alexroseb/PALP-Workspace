@@ -24,10 +24,8 @@
                         <th scope="col">ARC</th>
                         <th scope="col">Has art?</th>
                         <th scope="col">Has plaster?</th>
-                        <!-- <th scope="col">Sheets link (if exists)</th> -->
                         <th scope="col">Notes</th>
                         <th scope="col"></th>
-                        <th scope="col">Done</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,14 +34,15 @@
                             <td> {{arcname}} </td>
                             <td> {{details['is_art']}} </td>
                             <td> {{details['is_plaster']}} </td>
-                            <!-- <td> {% if "http" in details['link'] %}
-                                    <a href="{{details['link']}}" target="_blank">Document Link</a>
-                                 {% else %}
-                                    <a href="/makedoc" class="btn btn-outline-primary" id="makedoc">Create Document</a> 
-                                {% endif %}</td> -->
-                            <td> <a href="/makedoc/{{arcname}}" class="btn btn-outline-primary">Start working</a> </td>
                             <td> {{details['notes']}} </td>
-                            <td> {{details['done']}} </td>
+                            <td> {% if details['done'] %} 
+                                <a href="/makedoc/{{arcname}}" class="btn btn-outline-success">Marked as done</a>
+                                {% elif "http" in details['link'] %}
+                                <a href="/makedoc/{{arcname}}" class="btn btn-outline-secondary">Continue working</a>
+                                {% else %}
+                                <a href="/makedoc/{{arcname}}" class="btn btn-outline-primary">Start working</a>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
