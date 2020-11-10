@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Choose ARCs - PALP Workspace</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <h1> PALP Workspace</h1>
+            <p class="lead">Working on: Region {{ region }}, Insula {{ insula }}, Property {{ property }}, Room {{ room }}</p>
+        </div>
+        <div class="row">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">ARC</th>
+                        <th scope="col">Has art?</th>
+                        <th scope="col">Has plaster?</th>
+                        <th scope="col">Sheets link (if exists)</th>
+                        <th scope="col">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for arcname, details in arcs.items() %}
+                        <tr>
+                            <td> {{arcname}} </td>
+                            <td> {{details['is_art']}} </td>
+                            <td> {{details['is_plaster']}} </td>
+                            <td> {{details['link']}} </td>
+                            <td> {{details['notes']}} </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+</body>
+ 
+</html>
