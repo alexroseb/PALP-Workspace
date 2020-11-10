@@ -22,8 +22,10 @@ with open('mysql.cfg', 'r') as mysql_cfg:
 	app.config['MYSQL_HOST'] = mysql_cfg_lines[3]
 mysql = MySQL(app)
 
-#Google Sheets credentials
+#Google Translate and Sheets credentials
 tr_credentials = service_account.Credentials.from_service_account_file("My Project-1f2512d178cb.json")
+translate_client = translate.Client(credentials=tr_credentials)
+
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
@@ -46,6 +48,22 @@ box_auth = boxsdk.JWTAuth(
 
 box_access_token = box_auth.authenticate_instance()
 box_client = boxsdk.Client(box_auth)
+
+# Google Translate utility
+def dataTranslate(data):
+	indices = []
+	for d in data:
+		indices.append(d[0])
+
+	transdata = []
+	dataplustrans = []
+	for d in data:
+		translation = translate_client.translate(d[1], target_language="en", source_language="it")
+		transdata.append(translation['translatedText'])
+		dlist = list(d)
+		dlist.append(translation['translatedText'])
+		dataplustrans.append(dlist)
+	return dataplustrans, indices
 
 #Roman numeral utility
 def toRoman(data):
@@ -113,8 +131,11 @@ def init():
 		if locationlist[l].startswith(building):
 			session['ARClist'][arclist[l]] = {"link": "None", 
 											  "is_art": "Not defined",
-											  "is_plaster": "Not defined"
-											  "notes": ""}
+											  "is_plaster": "Not defined",
+											  "notes": "",
+											  "done": False,
+											  "current": False,
+											  "trackerindex": l}
 			if links[l]:
 				session['ARClist'][arclist[l]]["link"] = links[l]
 
@@ -126,7 +147,66 @@ def init():
 
 @app.route('/ARCs')
 def chooseARCs():
-	return render_template("chooseARCs.html", arcs = session['ARClist'])
+	return render_template("chooseARCs.html", arcs = session['ARClist'], 
+		                   region=session['region'], insula=session['insula'], 
+		                   property=session['property'], room=session['room'])
+
+@app.route('/makedoc/<chosenarc>')
+def makedoc(chosenarc):
+	session['ARClist'][chosenarc]['current'] = True
+	arcdeets = session['ARClist'][chosenarc]
+	if arcdeets['link'].contains('http'):
+		#use this link, we're good
+		pass
+	else:
+		#make new doc 
+		pass
+	return redirect('/PPP')
+
+@app.route("/PPP") # PPP page
+def showPPP():
+
+	if session.get('logged_in') and session["logged_in"]:
+		# PPP ids are a combination of location data
+		pppCur = mysql.connection.cursor()
+		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE id LIKE %s;"
+		loc = ""
+		if (session.get('region')):
+			loc += session['region']
+		if (session.get('insula')):
+			loc += session['insula']
+		if (session.get('property')):
+			loc += session['property']
+		if (session.get('room')):
+			loc += session['room']
+
+		if loc != "":
+			loc += "%"
+
+		pppCur.execute(pppQuery, [loc])
+		data = pppCur.fetchall()
+		pppCur.close()
+
+		dataplustrans, indices = dataTranslate(data)
+
+		ppp = arc = ""
+
+		if (session.get('carryoverPPP')):
+			ppp = session['carryoverPPP']
+
+		for a,d in session['ARClist'].items():
+			if d['current']:
+				arc = a
+
+		return render_template('PPP.html',
+			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=arc,
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
+
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
+
 
 @app.route('/cleardata') #Start over, redirects to home page
 def clearData():
