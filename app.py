@@ -27,13 +27,15 @@ mysql = MySQL(app)
 tr_credentials = service_account.Credentials.from_service_account_file("My Project-1f2512d178cb.json")
 translate_client = translate.Client(credentials=tr_credentials)
 
-scopes = ['https://www.googleapis.com/auth/spreadsheets']
+scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
 tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
 ranges = "Workflow_Tracking!A3:L87075"
 gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
+
+drive_client = build('drive', 'v3', credentials=scoped_gs)
 
 #Box API configurations
 with open('box_config.json', 'r') as f:
@@ -69,7 +71,10 @@ def dataTranslate(data):
 #Roman numeral utility
 def toRoman(data):
 	romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
-	romin = int(data) - 1
+	if data.isnumeric():
+		romin = int(data) - 1
+	else:
+		romin = 0
 	if romin >= 0 and romin < len(romans):
 		romreg = romans[romin]
 	else:
@@ -146,7 +151,7 @@ def init():
 		is_art = "no"
 		is_plaster = "no"
 		pinpCur = mysql.connection.cursor()
-		pinpQuery = "SELECT * FROM `PinP_preq` WHERE ARC=" + a +" OR other_ARC LIKE '%" + a + "%';"
+		pinpQuery = "SELECT * FROM `PinP_preq` WHERE `ARC`='" + a +"' OR `other_ARC` LIKE '%" + a + "%';"
 		pinpCur.execute(pinpQuery)
 		pinpdata = pinpCur.fetchall()
 		pinpCur.close()
@@ -162,7 +167,7 @@ def init():
 				is_plaster = "yes"
 
 		ppmCur = mysql.connection.cursor()
-		ppmQuery = "SELECT * FROM `PPM_preq` WHERE ARC=" + a +" OR other_ARC LIKE '%" + a + "%';"
+		ppmQuery = "SELECT * FROM `PPM_preq` WHERE `ARC`='" + a +"' OR `other_ARC` LIKE '%" + a + "%';"
 		ppmCur.execute(ppmQuery)
 		ppmdata = ppmCur.fetchall()
 		ppmCur.close()
@@ -192,8 +197,14 @@ def chooseARCs():
 def makedoc(chosenarc):
 	session['ARClist'][chosenarc]['current'] = True
 	if 'http' not in session['ARClist'][chosenarc]['link']:
-		#make new doc 
-		pass
+		template_spreadsheet_id = "1nGbcNkGD6Ssutb9Z6NbqkHHq3CKSzFSPrHltqW61nbM"
+		request_body = { "name": "Workspace_4_" + chosenarc, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
+		response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
+		newID = response['id']
+		#TODO: Go update Workspace tracker!!
+		session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
+		drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
+
 	return redirect('/PPP')
 
 @app.route("/PPP") # PPP page
@@ -347,8 +358,6 @@ def carryover_button():
 
 	if (request.args.get('catextpinp')):
 		return redirect("/PPP")
-
-	return redirect("/data")
 
 
 @app.route('/cleardata') #Start over, redirects to home page
