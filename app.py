@@ -389,6 +389,13 @@ def carryover_button():
 		dataList = carryCur.fetchall()
 		carryCur.close()
 
+		date = datetime.now().strftime("%Y-%m-%d")
+		for i in strargs.split(","):
+			addCur = mysql.connection.cursor()
+			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'",'+date+') ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
+			addCur.execute(addQuery)
+			addCur.close()
+
 		dataCopy = ""
 		for d in dataList:
 			if d[1] == 1:
