@@ -119,7 +119,7 @@ def init():
 	if (request.form.get('property')):
 		if request.form['property']:
 			session['property'] = request.form['property']
-			
+
 	if (request.form.get('room')):
 		if request.form['room']:
 			session['room'] = request.form['room']
@@ -150,7 +150,6 @@ def init():
 											  "ppmimgs": [],
 											  "notes": "",
 											  "done": False,
-											  "current": False,
 											  "trackerindex": l}
 			if links[l]:
 				session['ARClist'][arclist[l]]["link"] = links[l]
@@ -203,7 +202,8 @@ def chooseARCs():
 
 @app.route('/makedoc/<chosenarc>')
 def makedoc(chosenarc):
-	session['ARClist'][chosenarc]['current'] = True
+	session['carryoverPPP'] = ""
+	session['carryoverPPPids'] = []	
 	session['current'] = chosenarc
 	if 'http' not in session['ARClist'][chosenarc]['link']:
 		# Copy template spreadsheet
@@ -227,6 +227,8 @@ def makedoc(chosenarc):
 def showPPP():
 
 	if session.get('logged_in') and session["logged_in"]:
+		inswithz = propwithz = ""
+
 		# PPP ids are a combination of location data
 		pppCur = mysql.connection.cursor()
 		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE id LIKE %s;"
@@ -236,13 +238,17 @@ def showPPP():
 		if (session.get('insula')):
 			if len(session['insula']) < 2:
 				loc += "0" + session['insula']
+				inswithz = "0" + session['insula']
 			else:
 				loc += session['insula']
+				inswithz = session['insula']
 		if (session.get('property')):
 			if len(session['property']) < 2:
 				loc += "0" + session['property']
+				propwithz = "0" + session['property']
 			else:
 				loc += session['property']
+				propwithz = session['property']
 		if (session.get('room')):
 			loc += session['room']
 
@@ -258,7 +264,7 @@ def showPPP():
 
 		return render_template('PPP.html',
 			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=session['current'],
-			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
+			region=session['region'], insula=inswithz, property=propwithz, room=session['room'])
 
 	else:
 		error= "Sorry, this page is only accessible by logging in."
