@@ -31,7 +31,7 @@ scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapi
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
-tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M"
+tracking_ws = "1EdnoFWDpd38sznIrqMplmFwDMHlN7UATGEEIUsxpZdU" #TEMP: so I don't mess up Sebastian
 ranges = "Workflow_Tracking!A3:L87075"
 gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 
@@ -100,22 +100,29 @@ def login():
 
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():
+	session['carryoverPPP'] = ""
+	session['carryoverPPPids'] = []
+	session['region'] = ""
+	session['insula'] = ""
+	session['property'] = ""
+	session['room'] = ""
+
+
 	if (request.form.get('region')):
-		session['region'] = request.form['region']
-	else:
-		session['region'] = ""
+		if request.form['region']:
+			session['region'] = request.form['region']
+		
 	if (request.form.get('insula')):
-		session['insula'] = request.form['insula']
-	else:
-		session['insula'] = ""
+		if request.form['insula']:
+			session['insula'] = request.form['insula']
+
 	if (request.form.get('property')):
-		session['property'] = request.form['property']
-	else:
-		session['property'] = ""
+		if request.form['property']:
+			session['property'] = request.form['property']
+			
 	if (request.form.get('room')):
-		session['room'] = request.form['room']
-	else:
-		session['room'] = ""
+		if request.form['room']:
+			session['room'] = request.form['room']
 
 	prop = session['property']
 	if session['property'].isalpha():
@@ -132,6 +139,7 @@ def init():
 	links = values[10]
 
 	session['ARClist'] = {}
+	session['current'] = ""
 
 	for l in range(len(locationlist)):
 		if locationlist[l].startswith(building):
@@ -196,12 +204,20 @@ def chooseARCs():
 @app.route('/makedoc/<chosenarc>')
 def makedoc(chosenarc):
 	session['ARClist'][chosenarc]['current'] = True
+	session['current'] = chosenarc
 	if 'http' not in session['ARClist'][chosenarc]['link']:
-		template_spreadsheet_id = "1nGbcNkGD6Ssutb9Z6NbqkHHq3CKSzFSPrHltqW61nbM"
+		# Copy template spreadsheet
+		template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
 		request_body = { "name": "Workspace_4_" + chosenarc, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
 		response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
 		newID = response['id']
-		#TODO: Go update Workspace tracker!!
+
+		#Update Workflow Tracker
+		newrange = "Workflow_Tracking!K"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+		new_request = {"values": [["https://docs.google.com/spreadsheets/d/" + newID]]}
+		updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="USER_ENTERED").execute()
+
+		#Put in link
 		session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
 		drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
 
@@ -239,17 +255,9 @@ def showPPP():
 
 		dataplustrans, indices = dataTranslate(data)
 
-		ppp = arc = ""
-
-		if (session.get('carryoverPPP')):
-			ppp = session['carryoverPPP']
-
-		for a,d in session['ARClist'].items():
-			if d['current']:
-				arc = a
 
 		return render_template('PPP.html',
-			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=arc,
+			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=session['current'],
 			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
 
 	else:
@@ -296,6 +304,68 @@ def updatePPP():
 
 	return redirect('/PPP')
 
+@app.route("/associated") # PPM and PinP page
+def showAssociated():
+
+	if session.get('logged_in') and session["logged_in"]:
+		current = session['current']
+		d = session['ARClist'][current]
+		totpinp = []
+		for p in d['pinpimgs']:
+			assocCur = mysql.connection.cursor()
+			assocQuery = "SELECT DISTINCT `archive_id`, `id_box_file`, `img_alt` FROM `PinP` WHERE `archive_id` = '"+str(p)+"' ORDER BY `img_url` "
+			assocCur.execute(assocQuery)
+			all0 = assocCur.fetchall()
+			totpinp.append(all0)
+			filename = str(all0[0][1]) + ".jpg"
+			if not os.path.exists("static/images/"+filename):
+				try:
+					thumbnail = box_client.file(all0[0][1]).get_thumbnail(extension='jpg', min_width=200)
+				except boxsdk.BoxAPIException as exception:
+					thumbnail = exception.message
+				with open(os.path.join("static/images",filename), "wb") as f:
+					f.write(thumbnail)
+			assocCur.close()
+		totppm = []
+		for p in d['ppmimgs']:
+			assocCur = mysql.connection.cursor()
+			assocQuery = "SELECT DISTINCT `id`, `image_id`, `translated_text` FROM `PPM` WHERE `id` = '"+str(p)+"'"
+			assocCur.execute(assocQuery)
+			all0 = assocCur.fetchall()
+			totppm.append(all0)
+			filename = str(all0[0][1]) + ".jpg"
+			if not os.path.exists("static/images/"+filename):
+				try:
+					thumbnail = box_client.file(all0[0][1]).get_thumbnail(extension='jpg', min_width=200)
+				except boxsdk.BoxAPIException as exception:
+					thumbnail = exception.message
+				with open(os.path.join("static/images",filename), "wb") as f:
+					f.write(thumbnail)
+			assocCur.close()
+		return render_template('associated.html', arc=session['current'],
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'],
+			totpinp=totpinp, totppm=totppm)
+
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
+@app.route('/descriptions') #Copying data from workspace to Google Sheet 
+def showDescs():
+	if session.get('logged_in') and session["logged_in"]:
+
+		current = session['current']
+		gdoc = session['ARClist'][current]['link']
+
+		return render_template('descs.html',
+			carryoverPPP=session['carryoverPPP'],
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'], gdoc=gdoc, 
+			arc = current)
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
+
 @app.route('/carryover-button') #Carryover button found on multiple pages
 def carryover_button():
 	if (request.args.get('catextppp')):
@@ -319,73 +389,13 @@ def carryover_button():
 			session['carryoverPPP'] += "; " + dataCopy
 		else:
 			session['carryoverPPP'] = dataCopy
-
-	if (request.args.get('catextppm')):
-		strargs = request.args['catextppm'].replace("[", "").replace("]", "")
-		if (session.get('carryoverPPMids')):
-			session['carryoverPPMids'] += strargs.split(",")
-		else:
-			session['carryoverPPMids'] = strargs.split(",")
-		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT translated_text, reviewed FROM PPM WHERE id in (" + strargs + ") ;"
-		carryCur.execute(carryQuery)
-		dataList = carryCur.fetchall()
-		carryCur.close()
-
-		if dataList[1] == 1:
-
-			if (session.get('carryoverPPM')):
-				session['carryoverPPM'] += "; " + dataList[0]
-			else:
-				session['carryoverPPM'] = dataList[0]
-
-	if (request.args.get('catextpinp')):
-		pinpCur = mysql.connection.cursor()
-		pinpQuery = 'UPDATE `PinP` SET `already_used` = 1 where `id_box_file` in (' + request.args['catextpinp'] +');'
-		pinpCur.execute(pinpQuery)
-		mysql.connection.commit()
-		pinpCur.close()
-		if (session.get('carryoverPinP')):
-			session['carryoverPinP'] += "; " + request.args['catextpinp']
-		else:
-			session['carryoverPinP'] = request.args['catextpinp']
-
-	if (request.args.get('catextppp')):
-		return redirect("/PPM")
-
-	if (request.args.get('catextppm')):
-		return redirect("/data")
-
-	if (request.args.get('catextpinp')):
+		return redirect("/associated")
+	else:
 		return redirect("/PPP")
 
-
-@app.route('/cleardata') #Start over, redirects to home page
-def clearData():
-	session['carryoverPPP'] = ""
-	session['carryoverPPM'] = ""
-	session['carryoverPPMImgs'] = []
-	session['carryoverPinP'] = ""
-	session['carryoverPPPids'] = []
-	session['carryoverPPMids'] = []
-	session['carryoverPPMImgsids'] = []
-
-	session['arc'] = ""
-	session['region'] = ""
-	session['insula'] = ""
-	session['property'] = ""
-	session['room'] = ""
-
-	session['gdoc'] = ""
-
-	files = glob.glob('static/images/*')
-	for f in files:
-		try:
-			os.remove(f)
-		except OSError as e:
-			print("Error: %s : %s" % (f, e.strerror))
-
-	return render_template('index.html')
+@app.route('/help') #Help page - the info here is in the HTML
+def help():
+	return render_template('help.html')
 
 if __name__ == "__main__":
 	app.run()

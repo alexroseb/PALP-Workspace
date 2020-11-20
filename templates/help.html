@@ -15,44 +15,26 @@
  
     <div class="container">
         <div class="header">
-            <h1> PALP Workspace - {{arc}}  </h1>
-            <form action="/search" method="POST">
-                <label>Working on: </label>
-                <label for="region"> Region </label>
-                <input name="region" id="region" type="number" min=1 max=9 style="width:2.5em;" value= {{ region }} >
-                <label for="insula">, Insula </label>
-                <input name="insula" id="insula" style="width:2.5em;" value= {{ insula }} >
-                <label for="property">, Property</label>
-                <input name="property" id="property" style="width:2.5em;" value= {{ property }} >
-                <label for="room">, Room</label>
-                <input name="room" id="room" style="width:2.5em;" value= {{ room }} >
-                <input type="submit" class="btn btn-outline-primary btn-sm" value="Search">
-            </form>
+            <h1> PALP Workspace</h1>
             <nav>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" href="/PinP">Pompeii in Pictures</a>
+                        <a class="nav-link" href="/ARCs">Choose ARC</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/PPP">PPP</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/PPM">PPM</a>
+                        <a class="nav-link" href="/associated">PPM and PinP</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/data">Saved Data</a>
+                        <a class="nav-link" href="/descriptions">Description Sheet</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/descriptions">Descriptions</a>
+                        <a class="nav-link active" href="/help">Help</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/GIS">GIS Map</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Help</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Change ARC</a>
+                        <a class="nav-link" href="/">Change location</a>
                     </li>
                 </ul>
             </nav>

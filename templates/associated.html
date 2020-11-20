@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>PPP - PALP Workspace</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <div class="header">
+            <h1> PALP Workspace - {{arc}} </h1>
+            <p class="lead">Working on: Region {{ region }}, Insula {{ insula }}, Property {{ property }}, Room {{ room }}</p>
+            <nav>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ARCs">Choose ARC</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/PPP">PPP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/associated">PPM and PinP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/descriptions">Description Sheet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Change location</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row">
+            <h2> PinP</h2>
+            <table class="table table-bordered" data-resizable="true" width="100%">
+                <colgroup>
+                    <col>
+                    <col width="50%">
+                    <col width="50%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in totpinp %}
+                        <tr>
+                            <td> {{row[0][0]}} </td>
+                            <td> <a href="https://app.box.com/file/{{row[0][1]}}" target="_blank"><img class="img-fluid img-thumbnail" src="static/images/{{row[0][1]}}.jpg" alt=""></a> </td>
+                            <td>{{row[0][2]}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <h2>PPM </h2>
+            <table class="table table-bordered" data-resizable="true" width="100%">
+                <colgroup>
+                    <col>
+                    <col width="50%">
+                    <col width="50%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in totppm %}
+                        <tr>
+                            <td> {{row[0][0]}} </td>
+                            <td> <a href="https://app.box.com/file/{{row[0][1]}}" target="_blank"><img class="img-fluid img-thumbnail" src="static/images/{{row[0][1]}}.jpg" alt=""></a> </td>
+                            <td>{{row[0][2]}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <form action="https://prequel.p-lod.umasscreate.net/init" method="POST" target="_blank">
+                <input name="region" id="region" type="hidden" value= {{ region }} >
+                <input name="insula" id="insula" type="hidden" value= {{ insula }}>
+                <input name="property" id="property" type="hidden" value= {{ property }} >
+                <input name="room" id="room" type="hidden" value= {{ room }} >
+                <input type="submit" class="btn btn-primary" value="Find more images related to this location from the Prequel">
+            </form>
+            <br/><br/>
+        </div>
+    </div>
+</body>
+ 
+</html>
