@@ -32,7 +32,7 @@ scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
 tracking_ws = "1EdnoFWDpd38sznIrqMplmFwDMHlN7UATGEEIUsxpZdU" #TEMP: so I don't mess up Sebastian
-ranges = "Workflow_Tracking!A3:L87075"
+ranges = "Workflow_Tracking!A3:S87075"
 gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 
 drive_client = build('drive', 'v3', credentials=scoped_gs)
@@ -137,6 +137,7 @@ def init():
 	locationlist = values[0]
 	arclist = values[6]
 	links = values[10]
+	dones = values[16]
 
 	session['ARClist'] = {}
 	session['current'] = ""
@@ -153,6 +154,8 @@ def init():
 											  "trackerindex": l}
 			if links[l]:
 				session['ARClist'][arclist[l]]["link"] = links[l]
+			if dones[l]:
+				session['ARClist'][arclist[l]]["done"] = True
 
 	for a,v in session['ARClist'].items():
 		is_art = "no"
@@ -402,6 +405,16 @@ def carryover_button():
 @app.route('/help') #Help page - the info here is in the HTML
 def help():
 	return render_template('help.html')
+
+@app.route('/done')
+def done():
+	#Update Workflow Tracker
+	chosenarc = session['current']
+	newrange = "Workflow_Tracking!R"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+	new_request = {"values": [[datetime.now().strftime("%m/%d/%Y")]]}
+	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
+
+	return redirect("/")
 
 if __name__ == "__main__":
 	app.run()
