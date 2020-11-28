@@ -121,7 +121,7 @@ def init():
 	locationlist = values[0]
 	arclist = values[6]
 	links = values[10]
-	dones = values[16]
+	# dones = values[16]
 
 	session['ARClist'] = {}
 	session['current'] = ""
@@ -138,8 +138,8 @@ def init():
 											  "trackerindex": l}
 			if links[l]:
 				session['ARClist'][arclist[l]]["link"] = links[l]
-			if dones[l]:
-				session['ARClist'][arclist[l]]["done"] = True
+			# if dones[l]:
+			# 	session['ARClist'][arclist[l]]["done"] = True
 
 	for a,v in session['ARClist'].items():
 		is_art = "no"
@@ -207,7 +207,7 @@ def makedoc(chosenarc):
 		#Put in link
 		session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
 		drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
-		drive_client.permissions().create(body={"role":"owner", "type":"abrenon3@gmail.com"}, fileId=newID).execute()
+		drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "abrenon3@gmail.com"}, transferOwnership = True, fileId=newID).execute()
 
 	return redirect('/PPP')
 
