@@ -52,22 +52,6 @@ box_auth = boxsdk.JWTAuth(
 box_access_token = box_auth.authenticate_instance()
 box_client = boxsdk.Client(box_auth)
 
-# Google Translate utility
-def dataTranslate(data):
-	indices = []
-	for d in data:
-		indices.append(d[0])
-
-	transdata = []
-	dataplustrans = []
-	for d in data:
-		translation = translate_client.translate(d[1], target_language="en", source_language="it")
-		transdata.append(translation['translatedText'])
-		dlist = list(d)
-		dlist.append(translation['translatedText'])
-		dataplustrans.append(dlist)
-	return dataplustrans, indices
-
 #Roman numeral utility
 def toRoman(data):
 	romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
@@ -223,6 +207,7 @@ def makedoc(chosenarc):
 		#Put in link
 		session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
 		drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
+		drive_client.permissions().create(body={"role":"owner", "type":"abrenon3@gmail.com"}, fileId=newID).execute()
 
 	return redirect('/PPP')
 
@@ -262,7 +247,26 @@ def showPPP():
 		data = pppCur.fetchall()
 		pppCur.close()
 
-		dataplustrans, indices = dataTranslate(data)
+		indices = []
+		for d in data:
+			indices.append(d[0])
+
+		transdata = []
+		dataplustrans = []
+		for d in data:
+			translation = translate_client.translate(d[1], target_language="en", source_language="it")
+			transdata.append(translation['translatedText'])
+			dlist = list(d)
+			dlist.append(translation['translatedText'])
+
+			arcCur = mysql.connection.cursor()
+			arcQuery = "SELECT ARCs FROM PPP_desc WHERE uuid = " +d[0] +";"
+			arcCur.execute(arcQuery)
+			newarcs = arcCur.fetchall()
+			arcCur.close()
+			dlist.append(newarcs[0][0])
+
+			dataplustrans.append(dlist)
 
 
 		return render_template('PPP.html',
@@ -365,9 +369,29 @@ def showDescs():
 
 		current = session['current']
 		gdoc = session['ARClist'][current]['link']
+		d = session['ARClist'][current]
+		totpinp = []
+		for p in d['pinpimgs']:
+			assocCur = mysql.connection.cursor()
+			assocQuery = "SELECT DISTINCT `img_alt` FROM `PinP` WHERE `archive_id` = '"+str(p)+"' ORDER BY `img_url` "
+			assocCur.execute(assocQuery)
+			all0 = assocCur.fetchall()
+			for a in all0:
+				totpinp.append(a[0])
+		totppm = []
+		for p in d['ppmimgs']:
+			assocCur = mysql.connection.cursor()
+			assocQuery = "SELECT DISTINCT `translated_text` FROM `PPM` WHERE `id` = '"+str(p)+"'"
+			assocCur.execute(assocQuery)
+			all0 = assocCur.fetchall()
+			for a in all0:
+				totppm.append(a[0])
+
+		carryoverpinp = "; ".join(totpinp)
+		carryoverppm = "; ".join(totppm)
 
 		return render_template('descs.html',
-			carryoverPPP=session['carryoverPPP'],
+			carryoverPPP=session['carryoverPPP'], carryoverPPM = carryoverppm, carryoverPinP = carryoverpinp,
 			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'], gdoc=gdoc, 
 			arc = current)
 	else:
@@ -392,7 +416,7 @@ def carryover_button():
 		date = datetime.now().strftime("%Y-%m-%d")
 		for i in strargs.split(","):
 			addCur = mysql.connection.cursor()
-			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'",'+date+') ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
+			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
 			addCur.execute(addQuery)
 			addCur.close()
 
