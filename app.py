@@ -260,11 +260,14 @@ def showPPP():
 			dlist.append(translation['translatedText'])
 
 			arcCur = mysql.connection.cursor()
-			arcQuery = "SELECT ARCs FROM PPP_desc WHERE uuid = " +d[0] +";"
+			arcQuery = 'SELECT ARCs FROM PPP_desc WHERE uuid = "' +d[0] +'";'
 			arcCur.execute(arcQuery)
 			newarcs = arcCur.fetchall()
 			arcCur.close()
-			dlist.append(newarcs[0][0])
+			if len(newarcs) > 0:
+				dlist.append(newarcs[0][0])
+			else:
+				dlist.append("")
 
 			dataplustrans.append(dlist)
 
