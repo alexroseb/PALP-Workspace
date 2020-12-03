@@ -33,7 +33,6 @@ sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
 tracking_ws = "1EdnoFWDpd38sznIrqMplmFwDMHlN7UATGEEIUsxpZdU" #TEMP: so I don't mess up Sebastian
 ranges = "Workflow_Tracking!A3:S87075"
-gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 
 drive_client = build('drive', 'v3', credentials=scoped_gs)
 
@@ -82,64 +81,11 @@ def login():
 		error = 'Sorry, wrong password!'
 	return render_template('index.html', error=error)
 
-@app.route('/init', methods=['POST']) #Form submitted from home page
-def init():
-	session['carryoverPPP'] = ""
-	session['carryoverPPPids'] = []
-	session['region'] = ""
-	session['insula'] = ""
-	session['property'] = ""
-	session['room'] = ""
-
-
-	if (request.form.get('region')):
-		if request.form['region']:
-			session['region'] = request.form['region']
-		
-	if (request.form.get('insula')):
-		if request.form['insula']:
-			session['insula'] = request.form['insula']
-
-	if (request.form.get('property')):
-		if request.form['property']:
-			session['property'] = request.form['property']
-
-	if (request.form.get('room')):
-		if request.form['room']:
-			session['room'] = request.form['room']
-
-	prop = session['property']
-	if session['property'].isalpha():
-		prop += "1"
-	elif len(session['property']) < 2:
-		prop = "0" + prop
-	ins = session['insula']
-	if len(session['insula']) < 2:
-		ins = "0" + ins
-	building = toRoman(session['region']) + ins + prop + session['room']
+def pullPre():
+	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
-	locationlist = values[0]
-	arclist = values[6]
 	links = values[10]
 	# dones = values[16]
-
-	session['ARClist'] = {}
-	session['current'] = ""
-
-	for l in range(len(locationlist)):
-		if locationlist[l].startswith(building):
-			session['ARClist'][arclist[l]] = {"link": "None", 
-											  "is_art": "Not defined",
-											  "is_plaster": "Not defined",
-											  "pinpimgs": [],
-											  "ppmimgs": [],
-											  "notes": "",
-											  "done": False,
-											  "trackerindex": l}
-			if links[l]:
-				session['ARClist'][arclist[l]]["link"] = links[l]
-			# if dones[l]:
-			# 	session['ARClist'][arclist[l]]["done"] = True
 
 	for a,v in session['ARClist'].items():
 		is_art = "no"
@@ -179,13 +125,79 @@ def init():
 		v["is_art"] = is_art
 		v["is_plaster"] = is_plaster
 
+		l = v["trackerindex"]
+		if links[l]:
+			v["link"] = links[l]
+		# if dones[l]:
+		# 	v["done"] = True
+
+@app.route('/init', methods=['POST']) #Form submitted from home page
+def init():
+	session['carryoverPPP'] = ""
+	session['carryoverPPPids'] = []
+	session['region'] = ""
+	session['insula'] = ""
+	session['property'] = ""
+	session['room'] = ""
+
+
+	if (request.form.get('region')):
+		if request.form['region']:
+			session['region'] = request.form['region']
+		
+	if (request.form.get('insula')):
+		if request.form['insula']:
+			session['insula'] = request.form['insula']
+
+	if (request.form.get('property')):
+		if request.form['property']:
+			session['property'] = request.form['property']
+
+	if (request.form.get('room')):
+		if request.form['room']:
+			session['room'] = request.form['room']
+
+	prop = session['property']
+	if session['property'].isalpha():
+		prop += "1"
+	elif len(session['property']) < 2:
+		prop = "0" + prop
+	ins = session['insula']
+	if len(session['insula']) < 2:
+		ins = "0" + ins
+	building = toRoman(session['region']) + ins + prop + session['room']
+
+	session['ARClist'] = {}
+	session['current'] = ""
+
+	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
+	values = gsheet.get('values', [])
+	locationlist = values[0]
+	arclist = values[6]
+
+	for l in range(len(locationlist)):
+		if locationlist[l].startswith(building):
+			session['ARClist'][arclist[l]] = {"link": "None", 
+											  "is_art": "Not defined",
+											  "is_plaster": "Not defined",
+											  "pinpimgs": [],
+											  "ppmimgs": [],
+											  "notes": "",
+											  "done": False,
+											  "trackerindex": l}
+
 	return redirect('/ARCs')
 
 @app.route('/ARCs')
 def chooseARCs():
-	return render_template("chooseARCs.html", arcs = session['ARClist'], 
-		                   region=session['region'], insula=session['insula'], 
-		                   property=session['property'], room=session['room'])
+	if session.get('logged_in') and session["logged_in"]:
+		pullPre()
+		return render_template("chooseARCs.html", arcs = session['ARClist'], 
+			                   region=session['region'], insula=session['insula'], 
+			                   property=session['property'], room=session['room'])
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
 
 @app.route('/makedoc/<chosenarc>')
 def makedoc(chosenarc):
@@ -324,6 +336,7 @@ def updatePPP():
 def showAssociated():
 
 	if session.get('logged_in') and session["logged_in"]:
+		pullPre()
 		current = session['current']
 		d = session['ARClist'][current]
 		totpinp = []
@@ -369,6 +382,7 @@ def showAssociated():
 @app.route('/descriptions') #Copying data from workspace to Google Sheet 
 def showDescs():
 	if session.get('logged_in') and session["logged_in"]:
+		pullPre()
 
 		current = session['current']
 		gdoc = session['ARClist'][current]['link']
