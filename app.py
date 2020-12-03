@@ -32,7 +32,7 @@ scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
 tracking_ws = "1EdnoFWDpd38sznIrqMplmFwDMHlN7UATGEEIUsxpZdU" #TEMP: so I don't mess up Sebastian
-ranges = "Workflow_Tracking!A3:S87075"
+ranges = "Workflow_Tracking!A3:S87077"
 
 drive_client = build('drive', 'v3', credentials=scoped_gs)
 
