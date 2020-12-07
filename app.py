@@ -105,6 +105,7 @@ def pullPre():
 				is_plaster = "maybe"
 			if d[2] == "yes" and (is_plaster == "no" or is_plaster == "maybe"):
 				is_plaster = "yes"
+			v["notes"] += d[5]
 
 		ppmCur = mysql.connection.cursor()
 		ppmQuery = "SELECT * FROM `PPM_preq` WHERE `ARC`='" + a +"' OR `other_ARC` LIKE '%" + a + "%';"
@@ -121,6 +122,7 @@ def pullPre():
 				is_plaster = "maybe"
 			if d[2] == "yes" and (is_plaster == "no" or is_plaster == "maybe"):
 				is_plaster = "yes"
+			v["notes"] += d[5]
 
 		v["is_art"] = is_art
 		v["is_plaster"] = is_plaster
@@ -204,23 +206,7 @@ def makedoc(chosenarc):
 	session['carryoverPPP'] = ""
 	session['carryoverPPPids'] = []	
 	session['current'] = chosenarc
-	if 'http' not in session['ARClist'][chosenarc]['link']:
-		# Copy template spreadsheet
-		template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
-		request_body = { "name": "Workspace_4_" + chosenarc, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
-		response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
-		newID = response['id']
-
-		#Update Workflow Tracker
-		newrange = "Workflow_Tracking!K"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
-		new_request = {"values": [["https://docs.google.com/spreadsheets/d/" + newID]]}
-		updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="USER_ENTERED").execute()
-
-		#Put in link
-		session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
-		drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
-		drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "abrenon3@gmail.com"}, transferOwnership = True, fileId=newID).execute()
-
+	
 	return redirect('/PPP')
 
 @app.route("/PPP") # PPP page
@@ -386,6 +372,24 @@ def showDescs():
 
 		current = session['current']
 		gdoc = session['ARClist'][current]['link']
+
+		if 'http' not in gdoc:
+		# Copy template spreadsheet
+			template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
+			request_body = { "name": "Workspace_4_" + chosenarc, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
+			response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
+			newID = response['id']
+
+			#Update Workflow Tracker
+			newrange = "Workflow_Tracking!K"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+			new_request = {"values": [["https://docs.google.com/spreadsheets/d/" + newID]]}
+			updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="USER_ENTERED").execute()
+
+			#Put in link
+			session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
+			drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
+			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "abrenon3@gmail.com"}, transferOwnership = True, fileId=newID).execute()
+
 		d = session['ARClist'][current]
 		totpinp = []
 		for p in d['pinpimgs']:
@@ -453,6 +457,17 @@ def carryover_button():
 @app.route('/help') #Help page - the info here is in the HTML
 def help():
 	return render_template('help.html')
+
+@app.route('/noart')
+def noart():
+	#Update the tracker "art" column to say "No from DW"
+
+	chosenarc = session['current']
+	newrange = "Workflow_Tracking!L"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+	new_request = {"values": [["No from DW"]]}
+	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
+
+	return redirect('/ARCs')
 
 @app.route('/done')
 def done():
