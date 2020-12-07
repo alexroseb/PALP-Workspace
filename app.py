@@ -85,7 +85,8 @@ def pullPre():
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
 	links = values[10]
-	# dones = values[16]
+	dones = values[17]
+	artsDW = values[11]
 
 	for a,v in session['ARClist'].items():
 		is_art = "no"
@@ -130,8 +131,10 @@ def pullPre():
 		l = v["trackerindex"]
 		if links[l]:
 			v["link"] = links[l]
-		# if dones[l]:
-		# 	v["done"] = True
+		if dones[l]:
+			v["done"] = True
+		if "DW" in artsDW[l]:
+			v["noart"] = True
 
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():
@@ -186,6 +189,7 @@ def init():
 											  "ppmimgs": [],
 											  "notes": "",
 											  "done": False,
+											  "noart": False,
 											  "trackerindex": l}
 
 	return redirect('/ARCs')

@@ -37,6 +37,8 @@
                             <td> {{details['notes']}} </td>
                             <td> {% if details['done'] %} 
                                 <a href="/makedoc/{{arcname}}" class="btn btn-outline-success">Marked as done</a>
+                                {% elif details['noart'] %} 
+                                <a href="/makedoc/{{arcname}}" class="btn btn-outline-danger">Marked as having no art</a>
                                 {% elif "http" in details['link'] %}
                                 <a href="/makedoc/{{arcname}}" class="btn btn-outline-secondary">Continue working</a>
                                 {% else %}
