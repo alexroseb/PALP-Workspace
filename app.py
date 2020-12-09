@@ -380,20 +380,20 @@ def showDescs():
 		if 'http' not in gdoc:
 		# Copy template spreadsheet
 			template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
-			request_body = { "name": "Workspace_4_" + chosenarc, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
+			request_body = { "name": "Workspace_4_" + current, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
 			response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
 			newID = response['id']
 
 			#Update Workflow Tracker
-			newrange = "Workflow_Tracking!K"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+			newrange = "Workflow_Tracking!K"+ str(session['ARClist'][current]['trackerindex']+3)
 			new_request = {"values": [["https://docs.google.com/spreadsheets/d/" + newID]]}
 			updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="USER_ENTERED").execute()
 
 			#Put in link
-			session['ARClist'][chosenarc]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
+			session['ARClist'][current]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
 			drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
 			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "abrenon3@gmail.com"}, transferOwnership = True, fileId=newID).execute()
-
+		gdoc = session['ARClist'][current]['link']
 		d = session['ARClist'][current]
 		totpinp = []
 		for p in d['pinpimgs']:
