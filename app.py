@@ -31,7 +31,7 @@ scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapi
 scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
-tracking_ws = "1EdnoFWDpd38sznIrqMplmFwDMHlN7UATGEEIUsxpZdU" #TEMP: so I don't mess up Sebastian
+tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M" 
 ranges = "Workflow_Tracking!A3:S87077"
 
 drive_client = build('drive', 'v3', credentials=scoped_gs)
@@ -84,9 +84,9 @@ def login():
 def pullPre():
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
-	links = values[10]
-	dones = values[17]
-	artsDW = values[11]
+	links = values[11]
+	dones = values[18]
+	artsDW = values[12]
 
 	for a,v in session['ARClist'].items():
 		is_art = "no"
@@ -178,7 +178,7 @@ def init():
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
 	locationlist = values[0]
-	arclist = values[6]
+	arclist = values[7]
 
 	for l in range(len(locationlist)):
 		if locationlist[l].startswith(building):
@@ -380,7 +380,7 @@ def showDescs():
 		if 'http' not in gdoc:
 		# Copy template spreadsheet
 			template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
-			request_body = { "name": "Workspace_4_" + current, "parents":['1gJcDYgU53UqqQdUEJl_mb6LgMwxNiqEV']}
+			request_body = { "name": "Workspace_4_" + current, "parents":['1G_ZH-20qmxudaymDXMPe0wT4w_C_r00Q']}
 			response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
 			newID = response['id']
 
