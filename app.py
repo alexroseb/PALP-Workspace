@@ -85,7 +85,7 @@ def pullPre():
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
 	links = values[11]
-	dones = values[18]
+	# dones = values[18]
 	artsDW = values[12]
 
 	for a,v in session['ARClist'].items():
@@ -131,8 +131,8 @@ def pullPre():
 		l = v["trackerindex"]
 		if links[l]:
 			v["link"] = links[l]
-		if dones[l]:
-			v["done"] = True
+		# if dones[l]:
+		# 	v["done"] = True
 		if "DW" in artsDW[l]:
 			v["noart"] = True
 
@@ -385,7 +385,7 @@ def showDescs():
 			newID = response['id']
 
 			#Update Workflow Tracker
-			newrange = "Workflow_Tracking!K"+ str(session['ARClist'][current]['trackerindex']+3)
+			newrange = "Workflow_Tracking!L"+ str(session['ARClist'][current]['trackerindex']+3)
 			new_request = {"values": [["https://docs.google.com/spreadsheets/d/" + newID]]}
 			updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="USER_ENTERED").execute()
 
@@ -467,7 +467,7 @@ def noart():
 	#Update the tracker "art" column to say "No from DW"
 
 	chosenarc = session['current']
-	newrange = "Workflow_Tracking!L"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+	newrange = "Workflow_Tracking!M"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
 	new_request = {"values": [["No from DW"]]}
 	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
 
@@ -477,7 +477,7 @@ def noart():
 def done():
 	#Update Workflow Tracker
 	chosenarc = session['current']
-	newrange = "Workflow_Tracking!R"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+	newrange = "Workflow_Tracking!S"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
 	new_request = {"values": [[datetime.now().strftime("%m/%d/%Y")]]}
 	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
 
