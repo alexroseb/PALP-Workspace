@@ -447,8 +447,7 @@ def carryover_button():
 
 		dataCopy = ""
 		for d in dataList:
-			if d[1] == 1:
-				dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+			dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
 
 		if (session.get('carryoverPPP')):
 			session['carryoverPPP'] += "; " + dataCopy
@@ -469,6 +468,17 @@ def noart():
 	chosenarc = session['current']
 	newrange = "Workflow_Tracking!M"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
 	new_request = {"values": [["No from DW"]]}
+	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
+
+	return redirect('/ARCs')
+
+@app.route('/unknownart')
+def unknownart():
+	#Update the tracker "art" column to say "Unknown from DW"
+
+	chosenarc = session['current']
+	newrange = "Workflow_Tracking!M"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
+	new_request = {"values": [["Unknown from DW"]]}
 	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
 
 	return redirect('/ARCs')
