@@ -76,6 +76,10 @@ def toRoman(data):
 def trigger_error():
     division_by_zero = 1 / 0
 
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
 @app.route("/") # Home page
 def index():
 	return render_template('index.html')
