@@ -10,6 +10,14 @@ import re
 from datetime import datetime
 import os
 import glob
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn="https://5ebc9319ed40454993186c71e8c35553@o493026.ingest.sentry.io/5561383",
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0
+)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "ShuJAxtrE8tO5ZT"
@@ -32,7 +40,7 @@ scoped_gs = tr_credentials.with_scopes(scopes)
 sheets_client = build('sheets', 'v4', credentials=scoped_gs)
 sheet = sheets_client.spreadsheets()
 tracking_ws = "1F4nXX1QoyV1miaRUop2ctm8snDyov6GNu9aLt9t3a3M" 
-ranges = "Workflow_Tracking!A3:S87077"
+ranges = "Workflow_Tracking!A3:S87078"
 
 drive_client = build('drive', 'v3', credentials=scoped_gs)
 
@@ -63,6 +71,10 @@ def toRoman(data):
 	else:
 		romreg = data
 	return romreg
+
+@app.route('/debug-sentry')
+def trigger_error():
+    division_by_zero = 1 / 0
 
 @app.route("/") # Home page
 def index():
