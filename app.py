@@ -152,6 +152,15 @@ def pullPre():
 		if "DW" in artsDW[l]:
 			v["noart"] = True
 
+		arcCur = mysql.connection.cursor()
+		arcQuery = 'SELECT uuid FROM PPP_desc WHERE ARCs LIKE "%' + a +'%";'
+		arcCur.execute(arcQuery)
+		newarcs = arcCur.fetchall()
+		v['ppps'] = []
+		if len(newarcs) > 0:
+			for n in newarcs:
+				v['ppps'].append(n[0])
+
 @app.route('/init', methods=['POST']) #Form submitted from home page
 def init():
 	session['carryoverPPP'] = ""
@@ -206,7 +215,8 @@ def init():
 											  "notes": "",
 											  "done": False,
 											  "noart": False,
-											  "trackerindex": l}
+											  "trackerindex": l, 
+											  "ppps": []}
 
 	return redirect('/ARCs')
 
@@ -233,6 +243,7 @@ def makedoc(chosenarc):
 def showPPP():
 
 	if session.get('logged_in') and session["logged_in"]:
+		pullPre()
 		inswithz = propwithz = ""
 
 		# PPP ids are a combination of location data
@@ -289,6 +300,20 @@ def showPPP():
 
 			dataplustrans.append(dlist)
 
+		current = session['current']
+		v = session['ARClist'][current]
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT description, reviewed FROM PPP WHERE uuid in ('" + "','".join(v["ppps"]) + "') ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		dataCopy = ""
+		for d in dataList:
+			dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+
+		session['carryoverPPP'] = dataCopy
+
 
 		return render_template('PPP.html',
 			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=session['current'],
@@ -317,7 +342,6 @@ def updatePPP():
 	for k, v in dictargs.items():
 		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
 		sep = k.split("_")
-		print(sep[0])
 		pppQuery = "INSERT INTO PPP(`uuid`) SELECT * FROM ( SELECT '" + sep[0] + "' ) AS tmp WHERE NOT EXISTS ( SELECT 1 FROM PPP WHERE `uuid` = '" + sep[0] + "' ) LIMIT 1;"
 		pppCur.execute(pppQuery)
 		mysql.connection.commit()
@@ -431,6 +455,21 @@ def showDescs():
 		carryoverpinp = "; ".join(totpinp)
 		carryoverppm = "; ".join(totppm)
 
+		current = session['current']
+		v = session['ARClist'][current]
+		carryCur = mysql.connection.cursor()
+		carryQuery = "SELECT description, reviewed FROM PPP WHERE uuid in ('" + "','".join(v["ppps"]) + "') ;"
+		carryCur.execute(carryQuery)
+		dataList = carryCur.fetchall()
+		carryCur.close()
+
+		dataCopy = ""
+		for d in dataList:
+			dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+
+		session['carryoverPPP'] = dataCopy
+
+
 		return render_template('descs.html',
 			carryoverPPP=session['carryoverPPP'], carryoverPPM = carryoverppm, carryoverPinP = carryoverpinp,
 			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'], gdoc=gdoc, 
@@ -443,17 +482,8 @@ def showDescs():
 @app.route('/carryover-button') #Carryover button found on multiple pages
 def carryover_button():
 	if (request.args.get('catextppp')):
-		strargs = request.args['catextppp'].replace("[", "").replace("]", "")
-		if (session.get('carryoverPPPids')):
-			session['carryoverPPPids'] += strargs.split(",")
-		else:
-			session['carryoverPPPids'] = strargs.split(",")
-		carryCur = mysql.connection.cursor()
-		carryQuery = "SELECT description, reviewed FROM PPP WHERE uuid in (" + strargs + ") ;"
-		carryCur.execute(carryQuery)
-		dataList = carryCur.fetchall()
-		carryCur.close()
 
+		strargs = request.args['catextppp'].replace("[", "").replace("]", "")
 		date = datetime.now().strftime("%Y-%m-%d")
 		for i in strargs.split(","):
 			addCur = mysql.connection.cursor()
@@ -461,14 +491,17 @@ def carryover_button():
 			addCur.execute(addQuery)
 			addCur.close()
 
-		dataCopy = ""
-		for d in dataList:
-			dataCopy += translate_client.translate(d[0], target_language="en", source_language="it")['translatedText'] + "; "
+		current = session['current']
+		v = session['ARClist'][current]
+		arcCur = mysql.connection.cursor()
+		arcQuery = 'SELECT uuid FROM PPP_desc WHERE ARCs LIKE "%' + current +'%";'
+		arcCur.execute(arcQuery)
+		newarcs = arcCur.fetchall()
+		v['ppps'] = []
+		if len(newarcs) > 0:
+			for n in newarcs:
+				v['ppps'].append(n[0])
 
-		if (session.get('carryoverPPP')):
-			session['carryoverPPP'] += "; " + dataCopy
-		else:
-			session['carryoverPPP'] = dataCopy
 		return redirect("/associated")
 	else:
 		return redirect("/PPP")
