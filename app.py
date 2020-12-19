@@ -101,7 +101,7 @@ def pullPre():
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
 	links = values[11]
-	# dones = values[18]
+	dones = values[18]
 	artsDW = values[12]
 
 	for a,v in session['ARClist'].items():
@@ -147,8 +147,8 @@ def pullPre():
 		l = v["trackerindex"]
 		if links[l]:
 			v["link"] = links[l]
-		# if dones[l]:
-		# 	v["done"] = True
+		if dones[l]:
+			v["done"] = True
 		if "DW" in artsDW[l]:
 			v["noart"] = True
 

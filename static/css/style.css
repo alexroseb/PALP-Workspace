@@ -22,3 +22,9 @@
     padding-left: 5%;
     padding-right: 5%;
 }
+.h1, h1 {
+    font-size: 1.8rem;
+}
+.lead {
+    margin-bottom: 0;
+}
