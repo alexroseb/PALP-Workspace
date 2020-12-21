@@ -13,6 +13,7 @@ import glob
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+# Using sentry to log errors
 sentry_sdk.init(
     dsn="https://5ebc9319ed40454993186c71e8c35553@o493026.ingest.sentry.io/5561383",
     integrations=[FlaskIntegration()],
@@ -61,6 +62,14 @@ box_client = boxsdk.Client(box_auth)
 
 #Roman numeral utility
 def toRoman(data):
+	"""
+	Roman numeral utility
+	:param data: Arabic number to be converted (must be between 1 and 9)
+	:type data: int
+	:returns romreg: Roman numeral 
+	:type romreg: str
+		
+	"""
 	romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
 	if data.isnumeric():
 		romin = int(data) - 1
@@ -149,8 +158,10 @@ def pullPre():
 			v["link"] = links[l]
 		if dones[l]:
 			v["done"] = True
-		if "DW" in artsDW[l]:
+		if "No from DW" in artsDW[l]:
 			v["noart"] = True
+		if "Unknown from DW" in artsDW[l]:
+			v["unknown"] = True
 
 		arcCur = mysql.connection.cursor()
 		arcQuery = 'SELECT uuid FROM PPP_desc WHERE ARCs LIKE "%' + a +'%";'
@@ -215,6 +226,7 @@ def init():
 											  "notes": "",
 											  "done": False,
 											  "noart": False,
+											  "unknown": False,
 											  "trackerindex": l, 
 											  "ppps": []}
 
@@ -487,7 +499,8 @@ def carryover_button():
 		date = datetime.now().strftime("%Y-%m-%d")
 		for i in strargs.split(","):
 			addCur = mysql.connection.cursor()
-			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
+			#addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
+			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'")";'
 			addCur.execute(addQuery)
 			addCur.close()
 
