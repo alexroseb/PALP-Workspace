@@ -500,7 +500,7 @@ def carryover_button():
 		for i in strargs.split(","):
 			addCur = mysql.connection.cursor()
 			#addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = CONCAT(`ARCs`,", ","'+ session["current"] + '"), `date_added` = "' + date +'";'
-			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'")";'
+			addQuery = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +i+',"'+session["current"]+'","'+date+'");'
 			addCur.execute(addQuery)
 			addCur.close()
 
