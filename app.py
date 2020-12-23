@@ -116,6 +116,8 @@ def pullPre():
 	for a,v in session['ARClist'].items():
 		is_art = "no"
 		is_plaster = "no"
+		v["pinpimgs"] = []
+		v["ppmimgs"] = []
 		pinpCur = mysql.connection.cursor()
 		pinpQuery = "SELECT * FROM `PinP_preq` WHERE `ARC`='" + a +"' OR `other_ARC` LIKE '%" + a + "%';"
 		pinpCur.execute(pinpQuery)
