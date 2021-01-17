@@ -200,22 +200,23 @@ def init():
 		if request.form['room']:
 			session['room'] = request.form['room']
 
-	prop = session['property']
-	if session['property'].isalpha():
-		prop += "1"
-	elif len(session['property']) < 2:
-		prop = "0" + prop
-	ins = session['insula']
-	if len(session['insula']) < 2:
-		ins = "0" + ins
-	building = toRoman(session['region']) + ins + prop + session['room']
+	# prop = session['property']
+	# if session['property'].isalpha():
+	# 	prop += "1"
+	# elif len(session['property']) < 2:
+	# 	prop = "0" + prop
+	# ins = session['insula']
+	# if len(session['insula']) < 2:
+	# 	ins = "0" + ins
+	# building = toRoman(session['region']) + ins + prop + session['room']
 
+	building = "r" + str(session['region']) + "-i"+str(session['insula']) + "-p" + session['property'] + "-space-" + session['room']
 	session['ARClist'] = {}
 	session['current'] = ""
 
 	gsheet = sheet.values().get(spreadsheetId=tracking_ws, range=ranges, majorDimension="COLUMNS").execute()
 	values = gsheet.get('values', [])
-	locationlist = values[0]
+	locationlist = values[1]
 	arclist = values[7]
 
 	for l in range(len(locationlist)):
@@ -556,7 +557,7 @@ def done():
 	new_request = {"values": [[datetime.now().strftime("%m/%d/%Y")]]}
 	updatelink = sheet.values().update(spreadsheetId=tracking_ws, range=newrange, body=new_request, valueInputOption="RAW").execute()
 
-	return redirect("/")
+	return redirect("/ARCs")
 
 if __name__ == "__main__":
 	app.run()
