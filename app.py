@@ -220,7 +220,9 @@ def init():
 	arclist = values[7]
 
 	for l in range(len(locationlist)):
-		if locationlist[l].startswith(building):
+		places = locationlist[l].split("-")
+		if (places[0] == "r" + str(session['region'])) and ((places[1] == "i" +str(session['insula'])) or session['insula'] == "") and ((places[2] == "p" +str(session['property'])) or session['property'] == "") and (("-".join(places[3:]) == "space-" +str(session['room'])) or session['room'] == ""):
+		#if locationlist[l].startswith(building):
 			session['ARClist'][arclist[l]] = {"link": "None", 
 											  "is_art": "Not defined",
 											  "is_plaster": "Not defined",
@@ -434,8 +436,8 @@ def showDescs():
 
 		if 'http' not in gdoc:
 		# Copy template spreadsheet
-			template_spreadsheet_id = "1u7QrUrLg2eftFvzC4OvfohQt88A5mIsFBka6I4ELrUA"
-			request_body = { "name": "Workspace_4_" + current, "parents":['1G_ZH-20qmxudaymDXMPe0wT4w_C_r00Q']}
+			template_spreadsheet_id = "13M3sk4RAOy2Jlq86ECdwR8m11MsOaUNF1unbP6yQF-g"
+			request_body = { "name": "Workspace_5_" + current, "parents":['1G_ZH-20qmxudaymDXMPe0wT4w_C_r00Q']}
 			response = drive_client.files().copy(fileId = template_spreadsheet_id, body=request_body, supportsAllDrives = True).execute()
 			newID = response['id']
 
@@ -446,8 +448,11 @@ def showDescs():
 
 			#Put in link
 			session['ARClist'][current]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
-			drive_client.permissions().create(body={"role":"writer", "type":"anyone"}, fileId=newID).execute()
-			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "abrenon3@gmail.com"}, transferOwnership = True, fileId=newID).execute()
+			
+			auth_users = ['smastroianni@umass.edu', 'fdipietro@umass.edu', 'bmai@umass.edu', 'nicmjohnson@umass.edu', 'mcknapp@umass.edu', 'dbeason@umass.edu', 'lfield@umass.edu', 'tbernard@umass.edu', 'mhoffenberg@umass.edu', 'gsharaga@umass.edu', 'droller@umass.edu', 'shazizi@umass.edu', 'laurejt@umass.edu', 'abrenon@umass.edu', 'epoehler@classics.umass.edu', 'epoehler@gmail.com', 'palp-workspace@my-project-1537454316408.iam.gserviceaccount.com', 'plod@umass.edu', 'plodAD97@gmail.com']
+			for u in users:
+				drive_client.permissions().create(body={"role":"writer", "type":"user", 'emailAddress': u}, fileId=newID).execute()
+			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "plodAD97@gmail.com"}, transferOwnership = True, fileId=newID).execute()
 		gdoc = session['ARClist'][current]['link']
 		d = session['ARClist'][current]
 		totpinp = []
