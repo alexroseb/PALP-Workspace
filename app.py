@@ -191,14 +191,20 @@ def init():
 	if (request.form.get('insula')):
 		if request.form['insula']:
 			session['insula'] = request.form['insula']
+		else:
+			session['insula'] = ""
 
 	if (request.form.get('property')):
 		if request.form['property']:
 			session['property'] = request.form['property']
+		else:
+			session['property'] = ""
 
 	if (request.form.get('room')):
 		if request.form['room']:
 			session['room'] = request.form['room']
+		else:
+			session['room'] = ""
 
 	# prop = session['property']
 	# if session['property'].isalpha():
@@ -263,33 +269,10 @@ def showPPP():
 		pullPre()
 		inswithz = propwithz = ""
 
-		# PPP ids are a combination of location data
 		pppCur = mysql.connection.cursor()
-		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE id LIKE %s;"
-		loc = ""
-		if (session.get('region')):
-			loc += session['region']
-		if (session.get('insula')):
-			if len(session['insula']) < 2:
-				loc += "0" + session['insula']
-				inswithz = "0" + session['insula']
-			else:
-				loc += session['insula']
-				inswithz = session['insula']
-		if (session.get('property')):
-			if len(session['property']) < 2:
-				loc += "0" + session['property']
-				propwithz = "0" + session['property']
-			else:
-				loc += session['property']
-				propwithz = session['property']
-		if (session.get('room')):
-			loc += session['room']
+		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE `Region` = '" +session['region'] "' and `Insula` = '" +session['insula'] "' and `Doorway` = '" +session['property'] "' and `Room` = '" +session['room'] "';"
 
-		if loc != "":
-			loc += "%"
-
-		pppCur.execute(pppQuery, [loc])
+		pppCur.execute(pppQuery)
 		data = pppCur.fetchall()
 		pppCur.close()
 
