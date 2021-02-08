@@ -205,7 +205,6 @@ def init():
 			session['room'] = request.form['room']
 		else:
 			session['room'] = ""
-
 	# prop = session['property']
 	# if session['property'].isalpha():
 	# 	prop += "1"
@@ -270,7 +269,10 @@ def showPPP():
 		inswithz = propwithz = ""
 
 		pppCur = mysql.connection.cursor()
-		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE `Region` = '" +session['region'] "' and `Insula` = '" +session['insula'] "' and `Doorway` = '" +session['property'] "' and `Room` = '" +session['room'] "';"
+		rm = ""
+		if session['room']:
+			rm = "' and `Room` = '" +session['room']
+		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE `Region` = '" +session['region']+ "' and `Insula` = '" +session['insula']+ "' and `Doorway` = '" +session['property']+ rm+"';"
 
 		pppCur.execute(pppQuery)
 		data = pppCur.fetchall()
@@ -317,7 +319,7 @@ def showPPP():
 
 		return render_template('PPP.html',
 			catextppp=session['carryoverPPP'], dbdata = dataplustrans, indices = indices, arc=session['current'],
-			region=session['region'], insula=inswithz, property=propwithz, room=session['room'])
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
 
 	else:
 		error= "Sorry, this page is only accessible by logging in."
@@ -433,9 +435,9 @@ def showDescs():
 			session['ARClist'][current]['link'] = "https://docs.google.com/spreadsheets/d/" + newID
 			
 			auth_users = ['smastroianni@umass.edu', 'fdipietro@umass.edu', 'bmai@umass.edu', 'nicmjohnson@umass.edu', 'mcknapp@umass.edu', 'dbeason@umass.edu', 'lfield@umass.edu', 'tbernard@umass.edu', 'mhoffenberg@umass.edu', 'gsharaga@umass.edu', 'droller@umass.edu', 'shazizi@umass.edu', 'laurejt@umass.edu', 'abrenon@umass.edu', 'epoehler@classics.umass.edu', 'epoehler@gmail.com', 'palp-workspace@my-project-1537454316408.iam.gserviceaccount.com', 'plod@umass.edu', 'plodAD97@gmail.com']
-			for u in users:
-				drive_client.permissions().create(body={"role":"writer", "type":"user", 'emailAddress': u}, fileId=newID).execute()
-			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "plodAD97@gmail.com"}, transferOwnership = True, fileId=newID).execute()
+			for u in auth_users:
+				drive_client.permissions().create(body={"role":"writer", "type":"user", 'emailAddress': u, 'sendNotificationEmail': False}, fileId=newID).execute()
+			drive_client.permissions().create(body={"role":"owner", "type":"user", "emailAddress": "plodAD79@gmail.com"}, transferOwnership = True, fileId=newID).execute()
 		gdoc = session['ARClist'][current]['link']
 		d = session['ARClist'][current]
 		totpinp = []
