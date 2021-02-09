@@ -539,9 +539,17 @@ def unknownart():
 
 	return redirect('/ARCs')
 
-@app.route('/done')
+@app.route('/done', methods=['POST', 'GET'])
 def done():
 	#Update Workflow Tracker
+	db = request.form['pinporppm']
+	imgid = request.form.get("hero")
+	date = datetime.now().strftime("%Y-%m-%d")
+	ppmCur = mysql.connection.cursor()
+	ppmQuery = 'INSERT INTO `'+db+'` (id, hero_image, date_added) VALUES ('+ imgid +',"1",'+ date +') ON DUPLICATE KEY UPDATE `hero_image` = "1", `date_added` = "' + date +'";'
+	ppmCur.execute(ppmQuery)
+	mysql.connection.commit()
+	ppmCur.close()
 	chosenarc = session['current']
 	newrange = "Workflow_Tracking!S"+ str(session['ARClist'][chosenarc]['trackerindex']+3)
 	new_request = {"values": [[datetime.now().strftime("%m/%d/%Y")]]}

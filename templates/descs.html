@@ -91,7 +91,20 @@
             </div>
         </div>
         <div class="row">
-            <a href="/done" class="btn btn-outline-primary" style="text-align: center;">Done! Mark off on Tracker</a>
+            <form action="/done" method="POST">
+                <br/>
+                <p>Done? Select hero image:</p>
+                <label for="pinporppm" hidden="True"> PinP or PPM </label>
+                <select>
+                    <option value="PinP_preq">PinP</option>
+                    <option value="PPM_preq">PPM</option>
+                </select><br/>
+                <label for="hero"> Image ID </label>
+                <input class="form-control" name="hero" id="hero" required>
+                <br/>
+                <input type="submit" class="btn btn-outline-primary" value="Submit - done! Mark off on Tracker">
+                <br/>
+            </form>
         </div>
     </div>
 </body>
