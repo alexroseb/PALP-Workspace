@@ -373,7 +373,7 @@ def updatePPP():
 			pppQueryH = "UPDATE PPP SET `Room` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryH)
 		if sep[1] == "i":
-			pppQueryI = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +sep[0]+',"'+vrep+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = "'+ vrep + '", `date_added` = "' + date +'";'
+			pppQueryI = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES ("' +sep[0]+'","'+vrep+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = "'+ vrep + '", `date_added` = "' + date +'";'
 			pppCur.execute(pppQueryI)
 	mysql.connection.commit()
 	pppCur.close()
