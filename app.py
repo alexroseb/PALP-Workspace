@@ -272,7 +272,7 @@ def showPPP():
 		rm = ""
 		if session['room']:
 			rm = "' and `Room` = '" +session['room']
-		pppQuery = "SELECT uuid, description, id, location, material FROM PPP WHERE `Region` = '" +session['region']+ "' and `Insula` = '" +session['insula']+ "' and `Doorway` = '" +session['property']+ rm+"';"
+		pppQuery = "SELECT uuid, description, id, location, material, Room FROM PPP WHERE `Region` = '" +session['region']+ "' and `Insula` = '" +session['insula']+ "' and `Doorway` = '" +session['property']+ rm+"';"
 
 		pppCur.execute(pppQuery)
 		data = pppCur.fetchall()
