@@ -341,6 +341,7 @@ def pppReviewed():
 def updatePPP():
 	pppCur = mysql.connection.cursor()
 	dictargs = request.form.to_dict()
+	date = datetime.now().strftime("%Y-%m-%d")
 	for k, v in dictargs.items():
 		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
 		sep = k.split("_")
@@ -359,6 +360,21 @@ def updatePPP():
 		if sep[1] == "d":
 			pppQueryD = "UPDATE PPP SET `description` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
 			pppCur.execute(pppQueryD)
+		if sep[1] == "e":
+			pppQueryE = "UPDATE PPP SET `Region` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryE)
+		if sep[1] == "f":
+			pppQueryF = "UPDATE PPP SET `Insula` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryF)
+		if sep[1] == "g":
+			pppQueryG = "UPDATE PPP SET `Doorway` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryG)
+		if sep[1] == "h":
+			pppQueryH = "UPDATE PPP SET `Room` = '" + vrep + "' WHERE `uuid` = '" + sep[0] + "';"
+			pppCur.execute(pppQueryH)
+		if sep[1] == "i":
+			pppQueryI = 'INSERT INTO `PPP_desc` (uuid, ARCs, date_added) VALUES (' +sep[0]+',"'+vrep+'","'+date+'") ON DUPLICATE KEY UPDATE `ARCs` = "'+ vrep + '", `date_added` = "' + date +'";'
+			pppCur.execute(pppQueryI)
 	mysql.connection.commit()
 	pppCur.close()
 
@@ -544,9 +560,13 @@ def done():
 	#Update Workflow Tracker
 	db = request.form['pinporppm']
 	imgid = request.form.get("hero")
+	if db == "PinP_preq":
+		dbid = "archive_id"
+	if db == "PPM_preq":
+		dbid = "id"
 	date = datetime.now().strftime("%Y-%m-%d")
 	ppmCur = mysql.connection.cursor()
-	ppmQuery = 'INSERT INTO `'+db+'` (id, hero_image, date_added) VALUES ('+ imgid +',"1",'+ date +') ON DUPLICATE KEY UPDATE `hero_image` = "1", `date_added` = "' + date +'";'
+	ppmQuery = 'INSERT INTO `'+db+'` ('+dbid+', hero_image, date_added) VALUES ('+ imgid +',"1",'+ date +') ON DUPLICATE KEY UPDATE `hero_image` = "1", `date_added` = "' + date +'";'
 	ppmCur.execute(ppmQuery)
 	mysql.connection.commit()
 	ppmCur.close()
