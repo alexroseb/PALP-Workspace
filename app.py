@@ -581,8 +581,6 @@ def done():
 def showPPPEdit():
 
 	if session.get('logged_in') and session["logged_in"]:
-		inswithz = propwithz = ""
-
 		pppCur = mysql.connection.cursor()
 		rm = ""
 		if session['room']:
@@ -594,6 +592,24 @@ def showPPPEdit():
 		pppCur.close()
 
 		return render_template('PPP-edit.html', dbdata = data, 
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
+
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
+@app.route("/PPP-single/<uuid>") # PPP page
+def showPPPEdit():
+
+	if session.get('logged_in') and session["logged_in"]:
+		pppCur = mysql.connection.cursor()
+		pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `uuid` = '"+ id+"';"
+
+		pppCur.execute(pppQuery)
+		data = pppCur.fetchall()
+		pppCur.close()
+
+		return render_template('PPP-single.html', row = data[0], 
 			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
 
 	else:
