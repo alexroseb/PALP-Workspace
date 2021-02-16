@@ -605,8 +605,7 @@ def showPPPSingle():
 		    data = ['error', 'Nothing - ', 'please add ?id= or ?uuid=']
 		pppCur.close()
 
-		return render_template('PPP-single.html', dbdata = data, 
-			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
+		return render_template('PPP-single.html', dbdata = data)
 
 	else:
 		error= "Sorry, this page is only accessible by logging in."
