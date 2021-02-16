@@ -399,7 +399,7 @@ def showAssociated():
 				try:
 					thumbnail = box_client.file(all0[0][1]).get_thumbnail(extension='jpg', min_width=200)
 				except boxsdk.BoxAPIException as exception:
-					thumbnail = exception.message
+					thumbnail = bytes(exception.message, 'utf-8')
 				with open(os.path.join("static/images",filename), "wb") as f:
 					f.write(thumbnail)
 			assocCur.close()
@@ -415,7 +415,7 @@ def showAssociated():
 				try:
 					thumbnail = box_client.file(all0[0][1]).get_thumbnail(extension='jpg', min_width=200)
 				except boxsdk.BoxAPIException as exception:
-					thumbnail = exception.message
+					thumbnail = bytes(exception.message, 'utf-8')
 				with open(os.path.join("static/images",filename), "wb") as f:
 					f.write(thumbnail)
 			assocCur.close()
