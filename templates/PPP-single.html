@@ -21,8 +21,8 @@
         <div class="header">
             <p class="lead">PPP</p>
         </div>
-{% if data[0] == "error"}
-<div class="row"> <p> You searched for {{data[1]}} {{data[2]}}. That doesn't exist - please add an entry or try again. </p></div>
+{% if dbdata[0] == "error"%}
+<div class="row"> <p> You searched for {{dbdata[1]}} {{dbdata[2]}}. That doesn't exist - please add an entry or try again. </p></div>
 {% else %}
 {% for row in dbdata %}
 <div class="row">
@@ -69,14 +69,13 @@
         </table>
         <input type="hidden" name="uuid" id ="uuid" value="{{row[0]}}">
     <input type="submit" class="btn btn-success" value="Save">
-</div>
 </form>
 </div>
 {% endfor %}
 {% endif %}
 <div class="row">
 <button type="button" class="btn btn-outline-success" id="addElement">Add entry</button>
-<p> If you want to delete an entry, mark down uuid and tell Eric. </p>
+<p> If you want to delete an entry, mark down Unique ID and tell Eric. </p>
 </div>
 </div>
 <div id="newentries"></div>
@@ -100,6 +99,10 @@
   +'<div class="modal-body">'
         +'<table class="table">'
             +'<tbody>'
+                +'<tr>'
+                    +'<td><p>Unique ID</p></td>'
+                    +'<td>'+id+'</td>'
+                +'</tr>'
                 +'<tr>'
                     +'<td><p>Region</p></td>'
                     +'<td><input type="text" size="2" id="region" name="region" value="{{region}}"></td>'

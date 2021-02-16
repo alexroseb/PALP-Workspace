@@ -580,7 +580,7 @@ def done():
 	return redirect("/ARCs")
 
 @app.route("/PPP-single") # Edit one PPP at a time
-def showPPPSingle(uuid):
+def showPPPSingle():
 # put into URL search by PPP id
 # "next" button leads you to next uuid numerically
 	if session.get('logged_in') and session["logged_in"]:
@@ -588,19 +588,21 @@ def showPPPSingle(uuid):
 		pppCur = mysql.connection.cursor()
 		# catch error - flash "no id"
 		if (request.args.get('uuid')):
-			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `uuid` = '"+escape(requests.args['uuid'])+"';"
+			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `uuid` = '"+str(request.args['uuid'])+"';"
 			try:
 				pppCur.execute(pppQuery)
 				data = pppCur.fetchall()
 			except Exception as exception:
-				data = ['error', 'Unique ID', requests.args['uuid']]
+				data = ['error', 'Unique ID', request.args['uuid']]
 		elif (request.args.get('id')):
-			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `id` = '"+escape(requests.args['id'])+"';"
+			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `id` = '"+str(request.args['id'])+"';"
 			try:
 				pppCur.execute(pppQuery)
 				data = pppCur.fetchall()
 			except Exception:
-				data = ['error', 'PPP ID', requests.args['id']]
+				data = ['error', 'PPP ID', request.args['id']]
+		else:
+		    data = ['error', 'Nothing - ', 'please add ?id= or ?uuid=']
 		pppCur.close()
 
 		return render_template('PPP-single.html', dbdata = data, 
