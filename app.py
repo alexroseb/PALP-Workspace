@@ -12,6 +12,7 @@ import os
 import glob
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from markupsafe import escape
 
 # Using sentry to log errors
 sentry_sdk.init(
@@ -344,6 +345,7 @@ def updatePPP():
 	date = datetime.now().strftime("%Y-%m-%d")
 	for k, v in dictargs.items():
 		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+		vrep = escape(vrep)
 		sep = k.split("_")
 		pppQuery = "INSERT INTO PPP(`uuid`) SELECT * FROM ( SELECT '" + sep[0] + "' ) AS tmp WHERE NOT EXISTS ( SELECT 1 FROM PPP WHERE `uuid` = '" + sep[0] + "' ) LIMIT 1;"
 		pppCur.execute(pppQuery)
@@ -577,39 +579,31 @@ def done():
 
 	return redirect("/ARCs")
 
-@app.route("/PPP-edit") # PPP page
-def showPPPEdit():
-
+@app.route("/PPP-single") # Edit one PPP at a time
+def showPPPSingle(uuid):
+# put into URL search by PPP id
+# "next" button leads you to next uuid numerically
 	if session.get('logged_in') and session["logged_in"]:
-		pppCur = mysql.connection.cursor()
-		rm = ""
-		if session['room']:
-			rm = "' and `Room` = '" +session['room']
-		pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `Region` = '" +session['region']+ "' and `Insula` = '" +session['insula']+ "' and `Doorway` = '" +session['property']+ rm+"';"
 
-		pppCur.execute(pppQuery)
-		data = pppCur.fetchall()
+		pppCur = mysql.connection.cursor()
+		# catch error - flash "no id"
+		if (request.args.get('uuid')):
+			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `uuid` = '"+escape(requests.args['uuid'])+"';"
+			try:
+				pppCur.execute(pppQuery)
+				data = pppCur.fetchall()
+			except Exception as exception:
+				data = ['error', 'Unique ID', requests.args['uuid']]
+		elif (request.args.get('id')):
+			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `id` = '"+escape(requests.args['id'])+"';"
+			try:
+				pppCur.execute(pppQuery)
+				data = pppCur.fetchall()
+			except Exception:
+				data = ['error', 'PPP ID', requests.args['id']]
 		pppCur.close()
 
-		return render_template('PPP-edit.html', dbdata = data, 
-			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
-
-	else:
-		error= "Sorry, this page is only accessible by logging in."
-		return render_template('index.html', arc="", error=error)
-
-@app.route("/PPP-single/<uuid>") # PPP page
-def showPPPEdit():
-
-	if session.get('logged_in') and session["logged_in"]:
-		pppCur = mysql.connection.cursor()
-		pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `uuid` = '"+ id+"';"
-
-		pppCur.execute(pppQuery)
-		data = pppCur.fetchall()
-		pppCur.close()
-
-		return render_template('PPP-single.html', row = data[0], 
+		return render_template('PPP-single.html', dbdata = data, 
 			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
 
 	else:
@@ -667,7 +661,14 @@ def updatePPPEdit():
 	mysql.connection.commit()
 	pppCur.close()
 
-	return redirect('/PPP-edit')
+	if sep.startswith('new'):
+		nextidint = int(sep[3:]) + 1
+		nextid = "new"+str(nextidint)
+	else:
+		nextidint = int(sep) + 1
+		nextid = str(nextidint)
+	# redirect will contain parameters
+	return redirect('/PPP-single?uuid='+nextid)
 
 if __name__ == "__main__":
 	app.run()
