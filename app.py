@@ -577,5 +577,69 @@ def done():
 
 	return redirect("/ARCs")
 
+@app.route("/PPP-edit") # PPP page
+def showPPPEdit():
+
+	if session.get('logged_in') and session["logged_in"]:
+		inswithz = propwithz = ""
+
+		pppCur = mysql.connection.cursor()
+		rm = ""
+		if session['room']:
+			rm = "' and `Room` = '" +session['room']
+		pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `Region` = '" +session['region']+ "' and `Insula` = '" +session['insula']+ "' and `Doorway` = '" +session['property']+ rm+"';"
+
+		pppCur.execute(pppQuery)
+		data = pppCur.fetchall()
+		pppCur.close()
+
+		return render_template('PPP-edit.html', dbdata = data, 
+			region=session['region'], insula=session['insula'], property=session['property'], room=session['room'])
+
+	else:
+		error= "Sorry, this page is only accessible by logging in."
+		return render_template('index.html', arc="", error=error)
+
+#When items are changed via update form, update database
+@app.route('/update-ppp-edit', methods=['POST'])
+def updatePPPEdit():
+	pppCur = mysql.connection.cursor()
+	dictargs = request.form.to_dict()
+	date = datetime.now().strftime("%Y-%m-%d")
+	sep = dictargs['uuid']
+	for k, v in dictargs.items():
+		pppQuery = "INSERT INTO PPP(`uuid`) SELECT * FROM ( SELECT '" + sep + "' ) AS tmp WHERE NOT EXISTS ( SELECT 1 FROM PPP WHERE `uuid` = '" + sep + "' ) LIMIT 1;"
+		pppCur.execute(pppQuery)
+		mysql.connection.commit()
+		vrep = v.replace('\n', ' ').replace('\r', ' ').replace('\'', "\\'")
+		if k == "PPPID":
+			pppQueryA = "UPDATE PPP SET `id` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryA)
+		if k == "location":
+			pppQueryB = "UPDATE PPP SET `location` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryB)
+		if k == "material":
+			pppQueryC = "UPDATE PPP SET `material` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryC)
+		if k == "description":
+			pppQueryD = "UPDATE PPP SET `description` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryD)
+		if k == "condition":
+			pppQueryE = "UPDATE PPP SET `condition_ppp` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryE)
+		if k == "style":
+			pppQueryF = "UPDATE PPP SET `style` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryF)
+		if k == "bibliography":
+			pppQueryG = "UPDATE PPP SET `bibliography` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryG)
+		if k == "negative":
+			pppQueryH = "UPDATE PPP SET `photo_negative` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryH)
+	mysql.connection.commit()
+	pppCur.close()
+
+	return redirect('/PPP-edit')
+
 if __name__ == "__main__":
 	app.run()
