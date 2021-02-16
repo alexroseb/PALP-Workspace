@@ -636,6 +636,18 @@ def updatePPPEdit():
 		if k == "negative":
 			pppQueryH = "UPDATE PPP SET `photo_negative` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
 			pppCur.execute(pppQueryH)
+		if k == "region":
+			pppQueryI = "UPDATE PPP SET `Region` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryI)
+		if k == "insula":
+			pppQueryJ = "UPDATE PPP SET `Insula` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryJ)
+		if k == "doorway":
+			pppQueryK = "UPDATE PPP SET `Doorway` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryK)
+		if k == "room":
+			pppQueryL = "UPDATE PPP SET `Room` = '" + vrep + "' WHERE `uuid` = '" + sep + "';"
+			pppCur.execute(pppQueryL)
 	mysql.connection.commit()
 	pppCur.close()
 

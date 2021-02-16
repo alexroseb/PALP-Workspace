@@ -83,6 +83,9 @@
         </tbody>
     </table>
 </div>
+<div class="row">
+<button type="button" class="btn btn-outline-success" id="addElement">Add entry</button>
+</div>
 <!-- Modal -->
 {% for row in dbdata %}
 <div class="modal fade" id="editModalbutton1_{{row[0]}}" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="false">
@@ -96,7 +99,7 @@
   </div>
   <form id="inputform" action="/update-ppp-edit" method="POST">
   <div class="modal-body">
-        <table class="table" id="addable-table">
+        <table class="table">
             <tbody>
                 <tr>
                     <td><p>PPP ID</p></td>
@@ -143,34 +146,87 @@
 </div>
 {% endfor %}
 </div>
+<div id="newentries"></div>
 <script type="text/javascript">
     $('[id^="button1_"]').on('click', function() {
         var newid = '#editModal' + $(this).attr('id');
         $(newid).modal("show");
     });
-    $(document).ready(function() {
-      if(window.location.href.indexOf('#editModal') != -1) {
-        $('#editModal').modal('show');
-    }
-});
-
-    function addElement(){
+    $('#addElement').on('click', function() {
         var id = 'new' + Math.random().toString().substr(2, 9);
-        var table = document.getElementById("addable-table");
-        var row = table.insertRow(-1);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
-        var cell6 = row.insertCell(5);
-        var cell7 = row.insertCell(6);
-        var cell8 = row.insertCell(7);
-        cell1.innerHTML = '<td><textarea id="' + id + '_a" class="form-control" name="' + id + '_a">{{region}}{{insula}}{{property}}{{room}}</textarea></td>';
-        cell2.innerHTML = '<td><textarea id="' + id + '_b" class="form-control" name="' + id + '_b"></textarea></td>';
-        cell3.innerHTML = '<td><textarea id="' + id + '_c" class="form-control" name="' + id + '_c"></textarea></td>';
-        cell4.innerHTML = '<td><textarea id="' + id + '_d" class="form-control" name="' + id + '_d"></textarea></td>';
-    }
+        $("#newentries").append( '<div class="modal fade" id="newmodal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="false">'
+  +'<div class="modal-dialog" role="document">'
+    +'<div class="modal-content">'
+      +'<div class="modal-header">'
+        +'<h5 class="modal-title" id="editModal">New entry</h5>'
+        +'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'
+          +'<span aria-hidden="true">&times;</span>'
+      +'</button>'
+  +'</div>'
+  +'<form id="inputform" action="/update-ppp-edit" method="POST">'
+  +'<div class="modal-body">'
+        +'<table class="table">'
+            +'<tbody>'
+                +'<tr>'
+                    +'<td><p>Region</p></td>'
+                    +'<td><input type="text" size="2" id="region" name="region" value="{{region}}"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Insula</p></td>'
+                    +'<td><input type="text" size="2" id="insula" name="insula" value="{{insula}}"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Doorway</p></td>'
+                    +'<td><input type="text" size="2" id="doorway" name="doorway" value="{{property}}"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Room</p></td>'
+                    +'<td><input type="text" size="2" id="room" name="room" value="{{room}}"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>PPP ID</p></td>'
+                    +'<td><input type="text" size="15" id="PPPID" name="PPPID"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Location</p></td>'
+                    +'<td><input type="text" size="30" id="location" name="location"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Material</p></td>'
+                    +'<td><input type="text" size="30" id="material" name="material"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Description (Italian)</p></td>'
+                    +'<td><textarea id="description" name="description" cols="30"></textarea></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Condition</p></td>'
+                    +'<td><input type="text" size="10" id="condition" name="condition"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Style</p></td>'
+                    +'<td><input type="text" size="10" id="style" name="style"></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Bibliography</p></td>'
+                    +'<td><textarea id="bibliography" name="bibliography" cols="30"></textarea></td>'
+                +'</tr>'
+                +'<tr>'
+                    +'<td><p>Negative #</p></td>'
+                    +'<td><input type="text" size="12" id="negative" name="negative"></td>'
+                +'</tr>'
+            +'</tbody>'
+        +'</table>'
+        +'<input type="hidden" name="uuid" id ="uuid" value="'+id+'">'
++'</div>'
++'<div class="modal-footer">'
+    +'<input type="submit" class="btn btn-success" value="Save">'
++'</form>'
++'</div>'
++'</div>'
++'</div>' );
+        $('#newmodal').modal("show");
+    });
 </script>
 </body>
 
