@@ -19,37 +19,36 @@
 
     <div class="container">
         <div class="header">
-            <h1> PALP Prequel</h1>
-            <p class="lead">Working on: Region {{ region }}, Insula {{ insula }}, Property {{ property }}, Room {{ room }}</p>
+            <p class="lead"> PALP Workspace - {{arc}}. Working on: Region {{ region }}, Insula {{ insula }}, Property {{ property }}, Room {{ room }}</p>
             <nav>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" href="/PPM">PPM</a>
+                        <a class="nav-link" href="/ARCs">Choose ARC</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/PinP">Pompeii in Pictures</a>
+                        <a class="nav-link" href="/PPP">PPP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/associated">PPM and PinP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/descriptions">Description Sheet</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" target="_blank" href="https://arcg.is/ivHP0">GIS Map <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
-                          <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
-                      </svg></a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/help">Help</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="https://forms.gle/Ryp1zyFgDffgsKKVA">Time reporting <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
-                      <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
-                  </svg></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/">Change Location</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+  <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+  <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+</svg></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Change location</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 <div class="row">
     <table class="table table-bordered">
         <thead>
@@ -95,7 +94,7 @@
           <span aria-hidden="true">&times;</span>
       </button>
   </div>
-  <form id="inputform" action="/update-ppp" method="POST">
+  <form id="inputform" action="/update-ppp-edit" method="POST">
   <div class="modal-body">
         <table class="table" id="addable-table">
             <tbody>
@@ -133,7 +132,7 @@
                 </tr>
             </tbody>
         </table>
-        <input type="hidden" name="uuid" id ="uuid" value="{{row[0]}}"></input>
+        <input type="hidden" name="uuid" id ="uuid" value="{{row[0]}}">
 </div>
 <div class="modal-footer">
     <input type="submit" class="btn btn-success" value="Save">
