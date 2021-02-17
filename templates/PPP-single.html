@@ -85,7 +85,8 @@
 </form>
 </div>
 {% endfor %}
-
+{% endif %}
+{% if session['PPPlogged_in'] %}
 <div class="row">
 <button type="button" class="btn btn-outline-success" id="addElement">Add entry</button>
 <p> If you want to delete an entry, <a href="https://forms.gle/2Vcf1sCVfxgJEBcu9" target="_blank">fill out this form.</a> </p>

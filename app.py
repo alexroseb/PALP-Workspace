@@ -596,6 +596,9 @@ def showPPPSingle():
 			except Exception as exception:
 				data = 'error'
 				error= "You searched for Unique ID "+request.args['uuid']+". That doesn't exist - please add an entry or try again."
+			if len(data) < 1:
+				data = 'error'
+				error= "You searched for Unique ID "+request.args['uuid']+". That doesn't exist - please add an entry or try again."
 
 		elif (request.args.get('id')):
 			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `id` = '"+str(request.args['id'])+"';"
@@ -603,6 +606,9 @@ def showPPPSingle():
 				pppCur.execute(pppQuery)
 				data = pppCur.fetchall()
 			except Exception:
+				data = 'error'
+				error= "You searched for PPPID "+request.args['id']+". That doesn't exist - please add an entry or try again."
+			if len(data) < 1:
 				data = 'error'
 				error= "You searched for PPPID "+request.args['id']+". That doesn't exist - please add an entry or try again."
 		else:
