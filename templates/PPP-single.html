@@ -36,7 +36,7 @@
         <input type="submit" class="btn btn-primary" value="Log in">
     </form>
 </div>
-{% elif dbdata[0] != "error" %}
+{% elif dbdata != "error" %}
 {% for row in dbdata %}
 <div class="row">
   <form id="inputform" action="/update-ppp-edit" method="POST">
