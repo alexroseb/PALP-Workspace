@@ -613,7 +613,7 @@ def showPPPSingle():
 				error= "You searched for PPPID "+request.args['id']+". That doesn't exist - please add an entry or try again."
 		else:
 		    data = 'error'
-		    error = "Please put a query in the URL using the format ?id= or ?uuid=."
+		    error = "Please put a query in the URL using the format <a href='https://workspace.p-lod.umasscreate.net/PPP-single?id='>https://workspace.p-lod.umasscreate.net/PPP-single?id=</a> or <a href='https://workspace.p-lod.umasscreate.net/PPP-single?uuid='>https://workspace.p-lod.umasscreate.net/PPP-single?uuid=</a>."
 		pppCur.close()
 
 		return render_template('PPP-single.html', dbdata = data, error=error)
@@ -674,13 +674,12 @@ def updatePPPEdit():
 	pppCur.close()
 
 	if sep.startswith('new'):
-		nextidint = int(sep[3:]) + 1
-		nextid = "new"+str(nextidint)
+		return redirect('/PPP-single')
 	else:
 		nextidint = int(sep) + 1
 		nextid = str(nextidint)
-	# redirect will contain parameters
-	return redirect('/PPP-single?uuid='+nextid)
+		# redirect will contain parameters
+		return redirect('/PPP-single?uuid='+nextid)
 
 @app.route("/PPP-login", methods=['POST']) # Login form
 def PPPlogin():
