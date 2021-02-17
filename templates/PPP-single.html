@@ -21,9 +21,22 @@
         <div class="header">
             <p class="lead">PPP</p>
         </div>
-{% if dbdata[0] == "error"%}
-<div class="row"> <p> You searched for {{dbdata[1]}} {{dbdata[2]}}. That doesn't exist - please add an entry or try again. </p></div>
-{% else %}
+        <div class="row">
+            <p style="color:red;">{{error}}</p>
+        </div>
+{% if not session['PPPlogged_in'] %}
+<div class="row">
+    <form action="/PPP-login" method="POST">
+        <label for="username"> Username </label>
+        <input class="form-control" name="username" id="username" required>
+        <br/>
+        <label for="password"> Password </label>
+        <input type="password" class="form-control" name="password" id="password" required>
+        <br/>
+        <input type="submit" class="btn btn-primary" value="Log in">
+    </form>
+</div>
+{% elif dbdata[0] != "error" %}
 {% for row in dbdata %}
 <div class="row">
   <form id="inputform" action="/update-ppp-edit" method="POST">
