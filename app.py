@@ -595,7 +595,7 @@ def showPPPSingle():
 				data = pppCur.fetchall()
 			except Exception as exception:
 				data = ['error', 'Unique ID', request.args['uuid']]
-				error= "You searched for Unique ID +"request.args['uuid']"+. That doesn't exist - please add an entry or try again."
+				error= "You searched for Unique ID "+request.args['uuid']+". That doesn't exist - please add an entry or try again."
 
 		elif (request.args.get('id')):
 			pppQuery = "SELECT uuid, id, location, material, description, condition_ppp, style, bibliography, photo_negative FROM PPP WHERE `id` = '"+str(request.args['id'])+"';"
@@ -604,7 +604,7 @@ def showPPPSingle():
 				data = pppCur.fetchall()
 			except Exception:
 				data = ['error']
-				error= "You searched for PPPID +"request.args['id']"+. That doesn't exist - please add an entry or try again."
+				error= "You searched for PPPID "+request.args['id']+". That doesn't exist - please add an entry or try again."
 		else:
 		    data = ['error']
 		    error = "Please put a query in the URL using the format ?id= or ?uuid=."
@@ -677,7 +677,7 @@ def updatePPPEdit():
 	return redirect('/PPP-single?uuid='+nextid)
 
 @app.route("/PPP-login", methods=['POST']) # Login form
-def login():
+def PPPlogin():
 	error = ""
 	with open('userPPP.cfg', 'r') as user_cfg:
 		user_lines = user_cfg.read().splitlines()
@@ -685,9 +685,10 @@ def login():
 		password = user_lines[1]
 	if request.form['password'] == password and request.form['username'] == username:
 		session['PPPlogged_in'] = True
+		return redirect('/PPP-single')
 	else:
 		error = 'Sorry, wrong password!'
-	return render_template('PPP-single.html', dbdata="", error=error)
+		return render_template('PPP-single.html', dbdata="", error=error)
 
 if __name__ == "__main__":
 	app.run()
