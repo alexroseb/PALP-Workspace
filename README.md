@@ -1,4 +1,5 @@
-﻿# PALP Workspace
+This repo has been forked and is now in active development at https://github.com/p-lod/PALP-Workspace. 
+# PALP Workspace
 
 PALP Workspace is a Flask web application that was created to help researchers for the PALP project connect different sources of data to each other. It links  [Pompei: pitture e mosaici](https://www.worldcat.org/title/pompei-pitture-e-mosaici/oclc/28254535),  [Pitture e pavimenti di Pompei](https://www.worldcat.org/title/pitture-e-pavimenti-di-pompei/oclc/490575255),  [PompeiiinPictures](https://pompeiiinpictures.com/pompeiiinpictures/index.htm), and [an ArcGIS Map](https://arcg.is/ivHP0). The workspace is currently hosted at [https://workspace.p-lod.umasscreate.net/](https://workspace.p-lod.umasscreate.net/).
 
